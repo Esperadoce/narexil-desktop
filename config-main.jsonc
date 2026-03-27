@@ -60,7 +60,7 @@
     "format": "󰂯",
     "format-connected": "󰂱 {device_alias}",
     "tooltip-format": "Bluetooth\n{num_connections} connected",
-    "on-click": "bluedevil-wizard",
+    "on-click": "kcmshell6 kcm_bluetooth",
     "max-length": 24
   },
 

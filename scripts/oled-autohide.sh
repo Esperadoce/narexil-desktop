@@ -3,6 +3,15 @@
 # Shows bar when cursor reaches top edge of HDMI-A-1, hides after HIDE_DELAY ms.
 
 MONITOR="HDMI-A-1"
+
+# Ensure only one instance runs
+LOCKFILE=/tmp/oled-autohide.lock
+if [ -f "$LOCKFILE" ]; then
+    OLD_PID=$(cat "$LOCKFILE")
+    kill "$OLD_PID" 2>/dev/null || true
+fi
+echo $$ > "$LOCKFILE"
+trap "rm -f $LOCKFILE" EXIT
 HIDE_DELAY=2000  # ms before hiding after cursor leaves top zone
 POLL_MS=80       # polling interval in ms
 
