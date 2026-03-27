@@ -79,11 +79,23 @@ window#waybar {
 /* ── Shared module pill style ────────────────────────────────────────────── */
 
 #network,
+#bluetooth,
 #wireplumber,
 #clock,
 #custom-power {
   padding: 0 10px;
   color: #e0e0e0;
+}
+
+/* ── Bluetooth ───────────────────────────────────────────────────────────── */
+
+#bluetooth {
+  color: #888888;
+  padding: 0 10px;
+}
+
+#bluetooth.connected {
+  color: #33ccff;
 }
 
 /* ── Network ─────────────────────────────────────────────────────────────── */

@@ -17,6 +17,7 @@
     "modules-center": [],
     "modules-right": [
       "tray",
+      "bluetooth",
       "network",
       "wireplumber",
       "clock",
@@ -45,6 +46,17 @@
     "tray": {
       "icon-size": 16,
       "spacing": 6
+    },
+
+    "bluetooth": {
+      "format": "󰂯",
+      "format-connected": "󰂱 {device_alias}",
+      "format-connected-battery": "󰂱 {device_alias} {device_battery_percentage}%",
+      "tooltip-format": "Bluetooth\n{num_connections} connected",
+      "tooltip-format-connected": "{device_enumerate}",
+      "tooltip-format-enumerate-connected": "{device_alias}",
+      "on-click": "bluedevil-wizard",
+      "max-length": 24
     },
 
     "network": {
@@ -93,6 +105,7 @@
     "modules-center": [],
     "modules-right": [
       "tray",
+      "bluetooth",
       "network",
       "wireplumber",
       "clock",
@@ -118,6 +131,17 @@
     "tray": {
       "icon-size": 16,
       "spacing": 6
+    },
+
+    "bluetooth": {
+      "format": "󰂯",
+      "format-connected": "󰂱 {device_alias}",
+      "format-connected-battery": "󰂱 {device_alias} {device_battery_percentage}%",
+      "tooltip-format": "Bluetooth\n{num_connections} connected",
+      "tooltip-format-connected": "{device_enumerate}",
+      "tooltip-format-enumerate-connected": "{device_alias}",
+      "on-click": "bluedevil-wizard",
+      "max-length": 24
     },
 
     "network": {
