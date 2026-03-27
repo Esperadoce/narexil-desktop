@@ -1,0 +1,151 @@
+[
+  // ── OLED bar (HDMI-A-1) — auto-hide ────────────────────────────────────────
+  {
+    "name": "bar-oled",
+    "output": "HDMI-A-1",
+    "layer": "overlay",
+    "position": "top",
+    "height": 36,
+    "exclusive-zone": -1,
+    "auto-hide": 2000,
+    "spacing": 6,
+
+    "modules-left": [
+      "hyprland/workspaces",
+      "hyprland/window"
+    ],
+    "modules-center": [],
+    "modules-right": [
+      "tray",
+      "network",
+      "wireplumber",
+      "clock",
+      "custom/power"
+    ],
+
+    "hyprland/workspaces": {
+      "format": "{icon}",
+      "format-icons": {
+        "active":  "",
+        "default": ""
+      },
+      "on-scroll-up":   "hyprctl dispatch workspace e-1",
+      "on-scroll-down": "hyprctl dispatch workspace e+1",
+      "persistent-workspaces": {
+        "HDMI-A-1": [1, 2, 3, 4, 5]
+      }
+    },
+
+    "hyprland/window": {
+      "format": "{}",
+      "max-length": 80,
+      "separate-outputs": true
+    },
+
+    "tray": {
+      "icon-size": 16,
+      "spacing": 6
+    },
+
+    "network": {
+      "format-wifi":     " {essid}",
+      "format-ethernet": "󰈀 Ethernet",
+      "format-disconnected": "󰖪 Offline",
+      "tooltip-format-wifi": "{signalStrength}%",
+      "max-length": 20
+    },
+
+    "wireplumber": {
+      "format":       "{icon} {volume}%",
+      "format-muted": "󰝟 Muted",
+      "format-icons": ["", "", ""],
+      "on-click":     "pavucontrol",
+      "on-scroll-up":   "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+",
+      "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+    },
+
+    "clock": {
+      "format": "{:%H:%M}",
+      "tooltip-format": "{:%A, %d %B %Y}"
+    },
+
+    "custom/power": {
+      "format": "⏻",
+      "on-click": "systemctl poweroff",
+      "tooltip": false
+    }
+  },
+
+  // ── Main bars (DP-1 + HDMI-A-2) — persistent ───────────────────────────────
+  {
+    "name": "bar-main",
+    "output": ["DP-1", "HDMI-A-2"],
+    "layer": "top",
+    "position": "top",
+    "height": 36,
+    "exclusive-zone": 36,
+    "spacing": 6,
+
+    "modules-left": [
+      "hyprland/workspaces",
+      "hyprland/window"
+    ],
+    "modules-center": [],
+    "modules-right": [
+      "tray",
+      "network",
+      "wireplumber",
+      "clock",
+      "custom/power"
+    ],
+
+    "hyprland/workspaces": {
+      "format": "{icon}",
+      "format-icons": {
+        "active":  "",
+        "default": ""
+      },
+      "on-scroll-up":   "hyprctl dispatch workspace e-1",
+      "on-scroll-down": "hyprctl dispatch workspace e+1"
+    },
+
+    "hyprland/window": {
+      "format": "{}",
+      "max-length": 80,
+      "separate-outputs": true
+    },
+
+    "tray": {
+      "icon-size": 16,
+      "spacing": 6
+    },
+
+    "network": {
+      "format-wifi":        " {essid}",
+      "format-ethernet":    "󰈀 Ethernet",
+      "format-disconnected": "󰖪 Offline",
+      "tooltip-format-wifi": "{signalStrength}%",
+      "max-length": 20
+    },
+
+    "wireplumber": {
+      "format":       "{icon} {volume}%",
+      "format-muted": "󰝟 Muted",
+      "format-icons": ["", "", ""],
+      "on-click":     "pavucontrol",
+      "on-scroll-up":   "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+",
+      "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+    },
+
+    "clock": {
+      "format": "{:%H:%M}",
+      "tooltip-format": "{:%A, %d %B %Y}"
+    },
+
+    "custom/power": {
+      "format": "⏻",
+      "on-click": "systemctl poweroff",
+      "tooltip": false
+    }
+  }
+]
