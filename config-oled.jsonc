@@ -17,6 +17,7 @@
     "clock"
   ],
   "modules-right": [
+    "custom/weather",
     "cpu",
     "memory",
     "tray",
@@ -86,6 +87,14 @@
   "clock": {
     "format": "{:%H:%M  ·  %A %d %b %Y}",
     "tooltip": false
+  },
+
+  "custom/weather": {
+    "exec": "~/.config/waybar/scripts/weather.sh",
+    "return-type": "json",
+    "interval": 1800,
+    "format": "{}",
+    "tooltip": true
   },
 
   "custom/power": {

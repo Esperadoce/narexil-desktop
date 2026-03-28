@@ -87,6 +87,7 @@ window#waybar.bar-oled {
 #clock,
 #cpu,
 #memory,
+#custom-weather,
 #custom-power {
   padding: 0 10px;
   margin: 6px 2px;
@@ -113,6 +114,12 @@ window#waybar.bar-oled {
 
 #bluetooth.connected {
   color: #33ccff;
+}
+
+/* ── Weather ─────────────────────────────────────────────────────────────── */
+
+#custom-weather {
+  color: #aaddff;
 }
 
 /* ── Network ─────────────────────────────────────────────────────────────── */
