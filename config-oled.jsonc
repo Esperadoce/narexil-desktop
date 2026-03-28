@@ -14,16 +14,17 @@
     "hyprland/window"
   ],
   "modules-center": [
+    "custom/weather",
     "clock"
   ],
   "modules-right": [
-    "custom/weather",
     "cpu",
     "memory",
     "tray",
     "bluetooth",
     "network",
     "wireplumber",
+    "custom/nordvpn",
     "custom/power"
   ],
 
@@ -87,6 +88,14 @@
   "clock": {
     "format": "{:%H:%M  ·  %A %d %b %Y}",
     "tooltip": false
+  },
+
+  "custom/nordvpn": {
+    "exec": "~/.config/waybar/scripts/nordvpn.sh",
+    "return-type": "json",
+    "interval": 10,
+    "on-click": "~/.config/waybar/scripts/nordvpn-toggle.sh",
+    "tooltip": true
   },
 
   "custom/weather": {

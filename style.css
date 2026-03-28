@@ -88,6 +88,7 @@ window#waybar.bar-oled {
 #cpu,
 #memory,
 #custom-weather,
+#custom-nordvpn,
 #custom-power {
   padding: 0 10px;
   margin: 6px 2px;
@@ -114,6 +115,16 @@ window#waybar.bar-oled {
 
 #bluetooth.connected {
   color: #33ccff;
+}
+
+/* ── NordVPN ─────────────────────────────────────────────────────────────── */
+
+#custom-nordvpn {
+  color: #444444;
+}
+
+#custom-nordvpn.connected {
+  color: #00ff99;
 }
 
 /* ── Weather ─────────────────────────────────────────────────────────────── */
