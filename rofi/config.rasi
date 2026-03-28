@@ -1,0 +1,10 @@
+configuration {
+    modi:            "drun,run,calc,filebrowser";
+    show-icons:      true;
+    icon-theme:      "Papirus";
+    drun-display-format: "{name}";
+    font:            "Fira Sans 13";
+    terminal:        "kitty";
+}
+
+@theme "theme.rasi"

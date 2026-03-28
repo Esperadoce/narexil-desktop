@@ -42,7 +42,7 @@ case $CODE in
     *)                           ICON="󰖙" ;;
 esac
 
-TEXT="${ICON} ${TEMP}°C"
+TEXT="<span rise='1000'>${ICON}</span>   ${TEMP}°C"
 TOOLTIP="Lyon — ${DESC}\nFeels like: ${FEELS}°C  |  Humidity: ${HUMID}%  |  Wind: ${WIND} km/h\nTomorrow: ${TMRW_DESC}, ${TMRW_MIN}–${TMRW_MAX}°C"
 
 OUT="{\"text\": \"${TEXT}\", \"tooltip\": \"${TOOLTIP}\"}"
