@@ -12,6 +12,7 @@
 
   "modules-left": [
     "hyprland/workspaces",
+    "custom/scratchpad",
     "hyprland/window",
     "custom/media"
   ],
@@ -22,6 +23,8 @@
   "modules-right": [
     "cpu",
     "memory",
+    "custom/gpu",
+    "custom/vram",
     "tray",
     "bluetooth",
     "network",
@@ -43,13 +46,29 @@
   },
 
   "cpu": {
-    "format": "<span rise='1000'></span>  {usage}%",
+    "format": "<span rise='1000'>󰍛</span>  {usage}%",
     "interval": 2,
     "tooltip": false
   },
 
   "memory": {
-    "format": "<span rise='1000'></span>  {used:0.1f}G",
+    "format": "<span rise='1000'>󱤑</span>  {used:0.1f}G",
+    "interval": 5,
+    "tooltip": false
+  },
+
+  "custom/gpu": {
+    "format": "<span rise='1000'>󰭳</span>  {}",
+    "exec": "~/.config/waybar/scripts/gpu.sh",
+    "return-type": "json",
+    "interval": 2,
+    "tooltip": false
+  },
+
+  "custom/vram": {
+    "format": "<span rise='1000'>󰢮</span>  {}",
+    "exec": "~/.config/waybar/scripts/vram.sh",
+    "return-type": "json",
     "interval": 5,
     "tooltip": false
   },
@@ -109,8 +128,17 @@
 
   "custom/power": {
     "format": "⏻",
-    "on-click": "systemctl poweroff",
-    "tooltip": false
+    "on-click": "~/.config/waybar/scripts/power-menu.sh",
+    "tooltip": false,
+    "cursor": 60
+  },
+
+  "custom/scratchpad": {
+    "exec": "~/.config/waybar/scripts/scratchpad.sh",
+    "return-type": "json",
+    "interval": 2,
+    "on-click": "hyprctl dispatch togglespecialworkspace magic",
+    "escape": false
   },
 
   "custom/media": {

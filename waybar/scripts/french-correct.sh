@@ -28,10 +28,8 @@ if [[ -z "$RESULT" ]]; then
   exit 1
 fi
 
-# Copy result and paste
+# Copy result to clipboard
 echo -n "$RESULT" | wl-copy
-sleep 0.1
-ydotool key ctrl+v
 
 # Close processing notification and confirm
 PREV_ID=$(cat "$NOTIFY_ID_FILE" 2>/dev/null)

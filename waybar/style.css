@@ -87,6 +87,8 @@ window#waybar.bar-oled {
 #clock,
 #cpu,
 #memory,
+#custom-gpu,
+#custom-vram,
 #custom-weather,
 #custom-nordvpn,
 #custom-power {
@@ -153,7 +155,7 @@ window#waybar.bar-oled {
   color: #444444;
 }
 
-/* ── CPU / Memory ────────────────────────────────────────────────────────── */
+/* ── CPU / Memory / GPU / VRAM ───────────────────────────────────────────── */
 
 #cpu {
   color: #aaaaaa;
@@ -179,6 +181,14 @@ window#waybar.bar-oled {
   color: #ff5050;
 }
 
+#custom-gpu {
+  color: #aaaaaa;
+}
+
+#custom-vram {
+  color: #aaaaaa;
+}
+
 /* ── Clock ───────────────────────────────────────────────────────────────── */
 
 #clock {
@@ -200,6 +210,13 @@ window#waybar.bar-oled {
 #custom-power:hover {
   color: #ff5050;
   background: rgba(255, 80, 80, 0.15);
+}
+
+/* ── Scratchpad ──────────────────────────────────────────────────────────── */
+
+#custom-scratchpad {
+  color: #ffaa00;
+  padding: 0 10px;
 }
 
 /* ── Media ───────────────────────────────────────────────────────────────── */
