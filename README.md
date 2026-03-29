@@ -11,7 +11,7 @@ Built for a 3-monitor setup on CachyOS with an NVIDIA GPU and Hyprland via UWSM.
 | **Rofi** | App launcher, run, calculator, file browser — themed to match the bar |
 | **Clipboard** | cliphist + wl-clipboard, picker on `Super+Shift+V` |
 | **Wallpapers** | awww (animated wallpaper daemon), per-monitor |
-| **Scripts** | Weather, NordVPN, media controls, GPU/VRAM, scratchpad indicator, power menu, French correction |
+| **Scripts** | Weather, NordVPN, grouped media controls (prev/play/next pill), GPU/VRAM, scratchpad indicator, power menu, French correction |
 | **Notifications** | mako — dark theme matching waybar, urgency levels, Papirus icons |
 | **Hyprland config** | Autostart, keybinds, monitor layout, window rules |
 
@@ -220,10 +220,16 @@ Add your second monitor to `config-main.jsonc`'s output array:
 | `Super+Shift+Z` | Reset zoom to 1x |
 | `Super+S` | Toggle scratchpad |
 | `Super+Shift+S` | Move window to scratchpad |
-| `Print` | Screenshot full screen |
-| `Shift+Print` | Screenshot region |
-| `Super+Print` | Screenshot active window |
+| `Print` | Screenshot full screen (with mako thumbnail) |
+| `Shift+Print` | Screenshot region (with mako thumbnail) |
+| `Super+Print` | Screenshot active window (with mako thumbnail) |
 | `XF86Tools` | Open Cider (Apple Music) |
+
+---
+
+## HDR
+
+HDR is enabled globally via `render { enable_hdr = true }` in `hypr/general.conf`. Hyprland does not support per-monitor HDR — it applies to all outputs. Toggle by removing that line and running `hyprctl reload`.
 
 ---
 
