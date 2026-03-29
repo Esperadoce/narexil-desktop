@@ -11,7 +11,8 @@ Built for a 3-monitor setup on CachyOS with an NVIDIA GPU and Hyprland via UWSM.
 | **Rofi** | App launcher, run, calculator, file browser — themed to match the bar |
 | **Clipboard** | cliphist + wl-clipboard, picker on `Super+Shift+V` |
 | **Wallpapers** | awww (animated wallpaper daemon), per-monitor |
-| **Scripts** | Weather (wttr.in), NordVPN status/toggle, media controls, French text correction |
+| **Scripts** | Weather, NordVPN, media controls, GPU/VRAM, scratchpad indicator, power menu, French correction |
+| **Notifications** | mako — dark theme matching waybar, urgency levels, Papirus icons |
 | **Hyprland config** | Autostart, keybinds, monitor layout, window rules |
 
 ---
@@ -46,8 +47,14 @@ paru -S cliphist
 # Scripts dependencies
 sudo pacman -S playerctl jq curl
 
+# Notifications
+sudo pacman -S mako
+
+# NVIDIA GPU modules (gpu.sh + vram.sh)
+# requires nvidia-utils (usually already installed with NVIDIA drivers)
+
 # French correction (optional — needs Ollama + mistral-nemo)
-paru -S ollama ydotool vmtouch
+paru -S ollama
 ollama pull mistral-nemo
 
 # NordVPN (optional)
@@ -76,6 +83,9 @@ ln -sf ~/Source/narexil-desktop/waybar ~/.config/waybar
 
 # Rofi
 ln -sf ~/Source/narexil-desktop/rofi ~/.config/rofi
+
+# Mako (notifications)
+ln -sf ~/Source/narexil-desktop/mako ~/.config/mako
 ```
 
 ### 3. Copy Hyprland config files
@@ -219,16 +229,9 @@ Add your second monitor to `config-main.jsonc`'s output array:
 
 ## Optional: French text correction
 
-Requires Ollama with `mistral-nemo` and `ydotool`.
+Requires Ollama with `mistral-nemo`.
 
 1. Select any French text in any app
 2. Press `Super+Alt+F`
-3. The script sends the selection to mistral-nemo via Ollama, corrects grammar/spelling, and auto-pastes the result back
-
-For `ydotool` to work, your user must be in the `input` group:
-```bash
-sudo usermod -aG input $USER
-# then relogin
-```
-
-To skip the auto-paste (clipboard only, no auto-paste), edit `waybar/scripts/french-correct.sh` and remove the `ydotool key ctrl+v` line at the end.
+3. The script sends the selection to mistral-nemo via Ollama and corrects grammar/spelling
+4. The corrected text is copied to your clipboard — paste it manually with `Ctrl+V`
