@@ -13,7 +13,9 @@
     "hyprland/workspaces",
     "custom/scratchpad",
     "hyprland/window",
-    "custom/media"
+    "custom/media-prev",
+    "custom/media",
+    "custom/media-next"
   ],
   "modules-center": [
     "custom/weather",
@@ -133,6 +135,24 @@
     "on-click": "~/.config/waybar/scripts/power-menu.sh",
     "tooltip": false,
     "cursor": 60
+  },
+
+  "custom/media-prev": {
+    "exec": "~/.config/waybar/scripts/media-prev.sh",
+    "return-type": "json",
+    "interval": 2,
+    "on-click": "playerctl previous",
+    "tooltip": false,
+    "escape": false
+  },
+
+  "custom/media-next": {
+    "exec": "~/.config/waybar/scripts/media-next.sh",
+    "return-type": "json",
+    "interval": 2,
+    "on-click": "playerctl next",
+    "tooltip": false,
+    "escape": false
   },
 
   "custom/scratchpad": {

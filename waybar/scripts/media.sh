@@ -24,7 +24,7 @@ ARTIST=$(playerctl --player="$PLAYER" metadata artist 2>/dev/null)
 TITLE=$(playerctl --player="$PLAYER" metadata title 2>/dev/null)
 
 if [[ -z "$TITLE" ]]; then
-    echo '{"text": "", "class": "inactive"}'
+    printf '{"text": "%s", "class": "%s", "escape": false}\n' "$ICON" "${STATUS,,}"
     exit 0
 fi
 
@@ -40,7 +40,22 @@ if [[ ${#LABEL} -gt $MAX ]]; then
     LABEL="${LABEL:0:$MAX}…"
 fi
 
-TEXT="$ICON  $LABEL"
+LABEL="${LABEL//&/&amp;}"
+
+POS=$(playerctl --player="$PLAYER" position 2>/dev/null)
+LEN=$(playerctl --player="$PLAYER" metadata mpris:length 2>/dev/null)
+
+if [[ -n "$POS" && -n "$LEN" && "$LEN" -gt 0 ]]; then
+    pos_s=$(printf "%.0f" "$POS")
+    len_s=$(( LEN / 1000000 ))
+    pos_fmt=$(printf "%d:%02d" $(( pos_s / 60 )) $(( pos_s % 60 )))
+    len_fmt=$(printf "%d:%02d" $(( len_s / 60 )) $(( len_s % 60 )))
+    TIME="  <span color='#666666'>$pos_fmt / $len_fmt</span>"
+else
+    TIME=""
+fi
+
+TEXT="$ICON  $LABEL$TIME"
 TOOLTIP="$ARTIST\n$TITLE\n$PLAYER"
 
 printf '{"text": "%s", "tooltip": "%s", "class": "%s", "escape": false}\n' \
