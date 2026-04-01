@@ -3,6 +3,16 @@
 Hyprland desktop configuration — Waybar, Rofi, wallpapers, scripts, and keybinds.
 Built for a 3-monitor setup on CachyOS with an NVIDIA GPU and Hyprland via UWSM.
 
+## Philosophy
+
+This setup runs Hyprland but leans heavily on KDE for system tools. The goal is to avoid having two different apps that do the same thing — KDE is already installed, so wherever there's a KDE tool that works, it's used instead of pulling in something new.
+
+This means Bluetooth, file management, authentication dialogs, wallet/keychain, settings panels — all KDE. No separate Bluetooth manager, no separate file picker, no duplicate auth agents.
+
+The one deliberate exception is the terminal: both **Kitty** and **Konsole** are installed. Konsole is the KDE default and integrates well with the rest of the stack. Kitty is kept for specific use cases where lower VRAM usage matters — it's significantly lighter on GPU memory than Konsole.
+
+---
+
 ## What's included
 
 | Component | Description |
