@@ -1,0 +1,135 @@
+;;;; ── Variables ────────────────────────────────────────────────────────────
+
+(defpoll brightness-oled  :interval "3s"
+  `~/.config/eww/scripts/brightness-get.sh 1`)
+(defpoll brightness-dp1   :interval "3s"
+  `~/.config/eww/scripts/brightness-get.sh 2`)
+(defpoll brightness-hdmi2 :interval "3s"
+  `~/.config/eww/scripts/brightness-get.sh 3`)
+
+(defpoll volume :interval "1s"
+  `wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf "%d", $2 * 100}'`)
+
+(defpoll cpu-usage  :interval "2s"
+  `top -bn1 | grep "Cpu(s)" | awk '{printf "%d", $2}'`)
+(defpoll ram-usage  :interval "5s"
+  `free -g | awk '/^Mem/{printf "%.1fG", $3}'`)
+(defpoll gpu-usage  :interval "2s"
+  `nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits | tr -d ' '`)
+(defpoll vram-usage :interval "5s"
+  `nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | awk '{printf "%.1fG", $1/1024}'`)
+
+(defpoll media-text :interval "2s"
+  `playerctl metadata --format '{{artist}} - {{title}}' 2>/dev/null | cut -c1-36 || echo "Nothing playing"`)
+(defpoll media-playing :interval "2s"
+  `playerctl status 2>/dev/null | grep -q Playing && echo "true" || echo "false"`)
+
+(defpoll vpn-city :interval "10s"
+  `nordvpn status 2>/dev/null | grep "^City:" | awk '{print $2}' || echo ""`)
+(defpoll vpn-connected :interval "10s"
+  `nordvpn status 2>/dev/null | grep -q "^Status: Connected" && echo "true" || echo "false"`)
+
+(defpoll net-label :interval "5s"
+  `essid=$(iwgetid -r 2>/dev/null); if [ -n "$essid" ]; then echo "$essid"; else ip link | grep -q "state UP" && echo "Ethernet" || echo "Offline"; fi`)
+
+(defpoll clock-time :interval "1s"  `date +'%H:%M:%S'`)
+(defpoll clock-date :interval "60s" `date +'%A, %-d %B %Y'`)
+
+
+;;;; ── Reusable widgets ──────────────────────────────────────────────────────
+
+(defwidget section [title]
+  (label :class "section-title" :text title :halign "start"))
+
+(defwidget bright-row [label bus value]
+  (box :class "bright-row" :orientation "h" :space-evenly false :spacing 10
+    (label :class "bright-label" :text label)
+    (scale :class "bar-slider" :hexpand true
+           :value value :min 0 :max 100
+           :onchange "~/.config/eww/scripts/brightness-set.sh ${bus} $(echo {} | cut -d. -f1)")
+    (label :class "bar-value" :text "${value}%")
+    (button :class "ctrl-btn" :onclick "~/.config/eww/scripts/brightness-set.sh ${bus} $((${value} > 5 ? ${value} - 5 : 0))" "-")
+    (button :class "ctrl-btn" :onclick "~/.config/eww/scripts/brightness-set.sh ${bus} $((${value} < 95 ? ${value} + 5 : 100))" "+")))
+
+
+;;;; ── Main widget ───────────────────────────────────────────────────────────
+
+(defwidget dashboard-widget []
+  (box :class "panel" :orientation "v" :space-evenly false :spacing 0
+
+    ;; Clock
+    (box :class "card clock-card" :orientation "v" :space-evenly false :spacing 2
+      (label :class "time" :text clock-time)
+      (label :class "date" :text clock-date))
+
+    ;; Brightness
+    (box :class "card" :orientation "v" :space-evenly false :spacing 8
+      (section :title "BRIGHTNESS")
+      (bright-row :label "OLED"  :bus "1" :value brightness-oled)
+      (bright-row :label "DP-1"  :bus "2" :value brightness-dp1)
+      (bright-row :label "HDMI"  :bus "3" :value brightness-hdmi2))
+
+    ;; Volume
+    (box :class "card" :orientation "v" :space-evenly false :spacing 8
+      (section :title "VOLUME")
+      (box :orientation "h" :space-evenly false :spacing 10
+        (scale :class "bar-slider" :hexpand true
+               :value volume :min 0 :max 100
+               :onchange "wpctl set-volume @DEFAULT_AUDIO_SINK@ $(echo {} | cut -d. -f1)%")
+        (label :class "bar-value" :text "${volume}%")
+        (button :class "ctrl-btn" :onclick "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-" "-")
+        (button :class "ctrl-btn" :onclick "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+" "+")))
+
+    ;; System
+    (box :class "card" :orientation "v" :space-evenly false :spacing 8
+      (section :title "SYSTEM")
+      (box :class "stats" :orientation "h" :space-evenly true
+        (box :class "stat-box" :orientation "v" :space-evenly false :spacing 2
+          (label :class "stat-val" :text "${cpu-usage}%")
+          (label :class "stat-key" :text "CPU"))
+        (box :class "stat-box" :orientation "v" :space-evenly false :spacing 2
+          (label :class "stat-val" :text ram-usage)
+          (label :class "stat-key" :text "RAM"))
+        (box :class "stat-box" :orientation "v" :space-evenly false :spacing 2
+          (label :class "stat-val" :text "${gpu-usage}%")
+          (label :class "stat-key" :text "GPU"))
+        (box :class "stat-box" :orientation "v" :space-evenly false :spacing 2
+          (label :class "stat-val" :text vram-usage)
+          (label :class "stat-key" :text "VRAM"))))
+
+    ;; Media
+    (box :class "card" :orientation "v" :space-evenly false :spacing 8
+      (section :title "MEDIA")
+      (box :orientation "h" :space-evenly false :spacing 8
+        (button :class "media-btn" :onclick "playerctl previous" "|<")
+        (button :class {media-playing == "true" ? "media-btn playing" : "media-btn"}
+                :onclick "playerctl play-pause"
+                {media-playing == "true" ? "||" : "|>"})
+        (button :class "media-btn" :onclick "playerctl next" ">|")
+        (label :class "media-title" :text media-text :truncate true :hexpand true)))
+
+    ;; Network + VPN
+    (box :class "card footer" :orientation "h" :space-evenly false :spacing 0
+      (box :hexpand true :space-evenly false :spacing 6
+        (label :class "net-text" :text net-label))
+      (box :space-evenly false :spacing 8
+        (label :class {vpn-connected == "true" ? "vpn-text on" : "vpn-text"}
+               :text {vpn-connected == "true" ? "VPN: ${vpn-city}" : "VPN: Off"})
+        (button :class {vpn-connected == "true" ? "vpn-toggle on" : "vpn-toggle"}
+                :onclick "~/.config/waybar/scripts/nordvpn-toggle.sh &"
+                {vpn-connected == "true" ? "ON" : "OFF"})))))
+
+
+;;;; ── Window ────────────────────────────────────────────────────────────────
+
+(defwindow dashboard
+  :monitor 0
+  :geometry (geometry
+    :x "50%"
+    :y "56px"
+    :width "520px"
+    :anchor "top center")
+  :stacking "overlay"
+  :exclusive false
+  :focusable false
+  (dashboard-widget))
