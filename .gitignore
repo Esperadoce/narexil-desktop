@@ -5,3 +5,7 @@
 # Editor
 .vscode/
 .idea/
+
+# Local only
+HISTORY.md
+CLAUDE.md
