@@ -110,16 +110,11 @@ If your monitors use different I2C buses, run `ddcutil detect` and update `eww/s
 
 ---
 
-## OLED philosophy
+---
 
-The MSI MPG 491C (`HDMI-A-1`) is an OLED panel. OLED pixels emit their own light — bright static content left on screen for a long time causes **permanent burn-in**. Every design decision for that monitor is made with this in mind:
+## OLED burn-in prevention
 
-- **Wallpaper is solid black** (`0x000000` via awww) — black pixels on OLED are literally off, zero emission
-- **Lock screen is solid black** — hyprlock shows no widgets, no blurred screenshot, just black on HDMI-A-1
-- **Bar is auto-hide overlay** — the bar never sits statically on screen; it only appears when you move your cursor to the top edge and hides itself 2s after you leave
-- **Bar uses `layer: overlay` + `exclusive-zone: -1`** — it floats above content without reserving permanent space, so nothing is always-visible at a fixed position
-
-The two Dell monitors (`DP-1`, `HDMI-A-2`) are IPS panels — burn-in is not a concern, so they get wallpapers, a persistent bar, and a blurred screenshot on the lock screen.
+`HDMI-A-1` is an OLED panel. The wallpaper is solid black and the lock screen shows no content on that monitor — black OLED pixels are fully off, which prevents burn-in from static elements.
 
 ---
 
