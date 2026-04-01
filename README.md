@@ -176,3 +176,33 @@ Enabled globally via `render { enable_hdr = true }` in `hypr/general.conf`. Hypr
 2. Press `Super+Alt+F`
 3. Ollama + mistral-nemo corrects grammar/spelling
 4. Result is copied to clipboard — paste with `Ctrl+V`
+
+---
+
+## TODO
+
+### Done
+- [x] Waybar — persistent bar on DP-1/HDMI-A-2, auto-hide overlay on OLED
+- [x] OLED auto-hide daemon (cursor-triggered, 80ms poll)
+- [x] Eww on-demand dashboard (SUPER+HOME, opens on cursor's monitor)
+- [x] Brightness control via DDC/CI for all 3 monitors (debounced, cached)
+- [x] Volume control in dashboard
+- [x] CPU / RAM / GPU / VRAM stats in dashboard
+- [x] Media controls in dashboard (playerctl)
+- [x] NordVPN status + toggle in dashboard
+- [x] Hypridle — lock at 10min, DPMS off at 15min
+- [x] Hyprlock — per-monitor layout, OLED solid black
+- [x] French text correction (Ollama + mistral-nemo)
+- [x] Screenshot with mako thumbnail notification
+- [x] Zoom cycle (Super+Z)
+- [x] Scratchpad indicator in Waybar
+- [x] Clipboard history (cliphist + rofi)
+- [x] SUPER+B → Vivaldi
+
+### Planned
+- [ ] Hypridle dimming — gradually dim monitors before locking instead of hard-locking
+- [ ] Night light — `hyprsunset` auto color temperature by time of day (good for OLED)
+- [ ] Do Not Disturb toggle in eww dashboard (mako `makoctl mode`)
+- [ ] Clipboard image preview — cliphist image entries with swayimg preview
+- [ ] Per-app volume in eww dashboard
+- [ ] Workspace overview — `hyprexpo` plugin
