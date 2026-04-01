@@ -1,10 +1,10 @@
 ;;;; ── Variables ────────────────────────────────────────────────────────────
 
-(defpoll brightness-oled  :interval "3s"
+(defpoll brightness-oled  :interval "1s"
   `~/.config/eww/scripts/brightness-get.sh 1`)
-(defpoll brightness-dp1   :interval "3s"
+(defpoll brightness-dp1   :interval "1s"
   `~/.config/eww/scripts/brightness-get.sh 2`)
-(defpoll brightness-hdmi2 :interval "3s"
+(defpoll brightness-hdmi2 :interval "1s"
   `~/.config/eww/scripts/brightness-get.sh 3`)
 
 (defpoll volume :interval "1s"
@@ -20,9 +20,9 @@
   `nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | awk '{printf "%.1fG", $1/1024}'`)
 
 (defpoll media-text :interval "2s"
-  `playerctl metadata --format '{{artist}} - {{title}}' 2>/dev/null | cut -c1-36 || echo "Nothing playing"`)
+  `playerctl --player="%any" metadata --format '{{artist}} - {{title}}' 2>/dev/null | head -1 | cut -c1-36 || echo "Nothing playing"`)
 (defpoll media-playing :interval "2s"
-  `playerctl status 2>/dev/null | grep -q Playing && echo "true" || echo "false"`)
+  `playerctl --player="%any" status 2>/dev/null | grep -q Playing && echo "true" || echo "false"`)
 
 (defpoll vpn-city :interval "10s"
   `nordvpn status 2>/dev/null | grep "^City:" | awk '{print $2}' || echo ""`)
@@ -39,17 +39,17 @@
 ;;;; ── Reusable widgets ──────────────────────────────────────────────────────
 
 (defwidget section [title]
-  (label :class "section-title" :text title :halign "start"))
+  (label :class "section-title" :text title :halign "start" :wrap false :truncate false))
 
 (defwidget bright-row [label bus value]
   (box :class "bright-row" :orientation "h" :space-evenly false :spacing 10
     (label :class "bright-label" :text label)
     (scale :class "bar-slider" :hexpand true
-           :value value :min 0 :max 100
+           :value value :min 1 :max 101
            :onchange "~/.config/eww/scripts/brightness-set.sh ${bus} $(echo {} | cut -d. -f1)")
     (label :class "bar-value" :text "${value}%")
     (button :class "ctrl-btn" :onclick "~/.config/eww/scripts/brightness-set.sh ${bus} $((${value} > 5 ? ${value} - 5 : 0))" "-")
-    (button :class "ctrl-btn" :onclick "~/.config/eww/scripts/brightness-set.sh ${bus} $((${value} < 95 ? ${value} + 5 : 100))" "+")))
+    (button :class "ctrl-btn" :onclick "~/.config/eww/scripts/brightness-set.sh ${bus} $((${value} + 5))" "+")))
 
 
 ;;;; ── Main widget ───────────────────────────────────────────────────────────
@@ -74,11 +74,11 @@
       (section :title "VOLUME")
       (box :orientation "h" :space-evenly false :spacing 10
         (scale :class "bar-slider" :hexpand true
-               :value volume :min 0 :max 100
+               :value volume :min 0 :max 101
                :onchange "wpctl set-volume @DEFAULT_AUDIO_SINK@ $(echo {} | cut -d. -f1)%")
         (label :class "bar-value" :text "${volume}%")
         (button :class "ctrl-btn" :onclick "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-" "-")
-        (button :class "ctrl-btn" :onclick "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+" "+")))
+        (button :class "ctrl-btn" :onclick "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+" "+")))
 
     ;; System
     (box :class "card" :orientation "v" :space-evenly false :spacing 8

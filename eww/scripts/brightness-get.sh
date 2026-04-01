@@ -1,5 +1,10 @@
 #!/bin/bash
 # Usage: brightness-get.sh <bus>
-# Outputs current brightness value (0-100)
+# Reads from cache — instant, no DDC hit
 BUS=$1
-ddcutil getvcp 10 --bus "$BUS" 2>/dev/null | grep -oP 'current value =\s*\K\d+'
+CACHE="/tmp/eww-brightness-${BUS}"
+if [[ -f "$CACHE" ]]; then
+  cat "$CACHE"
+else
+  echo "50"
+fi

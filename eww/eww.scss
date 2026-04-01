@@ -17,7 +17,7 @@
 .card {
   background: rgba(255, 255, 255, 0.04);
   border-radius: 10px;
-  padding: 14px 16px;
+  padding: 12px 12px;
   margin: 3px;
 }
 
@@ -52,6 +52,7 @@
   color: rgba(51, 204, 255, 0.7);
   letter-spacing: 1.5px;
   margin-bottom: 2px;
+  min-width: 150px;
 }
 
 /* Brightness rows */
