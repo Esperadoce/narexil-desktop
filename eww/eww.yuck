@@ -122,6 +122,8 @@
 
 ;;;; ── Window ────────────────────────────────────────────────────────────────
 
+(defvar panel-closing "false")
+
 (defwindow dashboard
   :monitor 0
   :geometry (geometry
@@ -132,4 +134,5 @@
   :stacking "overlay"
   :exclusive false
   :focusable false
-  (dashboard-widget))
+  (box :class {panel-closing == "true" ? "panel-wrap closing" : "panel-wrap opening"}
+    (dashboard-widget)))

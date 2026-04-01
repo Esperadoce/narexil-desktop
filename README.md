@@ -1,6 +1,6 @@
 # narexil-desktop
 
-Hyprland desktop configuration — Waybar, Rofi, wallpapers, scripts, and keybinds.
+Hyprland desktop configuration — Waybar, Eww dashboard, Rofi, wallpapers, scripts, and keybinds.
 Built for a 3-monitor setup on CachyOS with an NVIDIA GPU and Hyprland via UWSM.
 
 ## Philosophy
@@ -18,12 +18,15 @@ The one deliberate exception is the terminal: both **Kitty** and **Konsole** are
 | Component | Description |
 |-----------|-------------|
 | **Waybar** | Split configs: persistent bar on DP-1/HDMI-A-2, auto-hide overlay on OLED |
+| **Eww dashboard** | On-demand floating panel (SUPER+HOME) — brightness, volume, system stats, media, VPN |
 | **Rofi** | App launcher, run, calculator, file browser — themed to match the bar |
 | **Clipboard** | cliphist + wl-clipboard, picker on `Super+Shift+V` |
 | **Wallpapers** | awww (animated wallpaper daemon), per-monitor |
 | **Scripts** | Weather, NordVPN, grouped media controls (prev/play/next pill), GPU/VRAM, scratchpad indicator, power menu, French correction |
 | **Notifications** | mako — dark theme matching waybar, urgency levels, Papirus icons |
 | **Hyprland config** | Autostart, keybinds, monitor layout, window rules |
+| **Hypridle** | Idle daemon — screen lock after inactivity |
+| **Hyprlock** | Lock screen with blurred screenshot, clock, per-monitor layout |
 
 ---
 
@@ -33,7 +36,7 @@ The one deliberate exception is the terminal: both **Kitty** and **Konsole** are
 |--------|--------|-----|
 | `DP-1` | Dell S2721DS 2560×1440 (main) | Persistent |
 | `HDMI-A-2` | Dell S2721DS 2560×1440 (secondary) | Persistent |
-| `HDMI-A-1` | MSI MPG 491C OLED 3840×1080 (above desk) | Auto-hide overlay |
+| `HDMI-A-1` | MSI MPG 491C OLED 5120×1440 (above desk) | Auto-hide overlay |
 
 If your outputs have different names, see [Adapting to your setup](#adapting-to-your-setup).
 
@@ -45,7 +48,13 @@ Install these before setting up:
 
 ```bash
 # Core
-paru -S waybar hyprland uwsm rofi-wayland rofi-calc
+paru -S waybar hyprland uwsm rofi-wayland rofi-calc hypridle
+
+# Eww dashboard
+paru -S eww
+
+# DDC/CI brightness control (external monitors)
+sudo pacman -S ddcutil
 
 # Wallpapers
 paru -S awww-git
@@ -71,7 +80,7 @@ ollama pull mistral-nemo
 paru -S nordvpn-bin
 
 # Fonts
-sudo pacman -S ttf-fira-sans
+sudo pacman -S noto-fonts
 paru -S ttf-nerd-fonts-symbols   # or any Nerd Font
 ```
 
@@ -96,6 +105,9 @@ ln -sf ~/Source/narexil-desktop/rofi ~/.config/rofi
 
 # Mako (notifications)
 ln -sf ~/Source/narexil-desktop/mako ~/.config/mako
+
+# Eww dashboard
+ln -sf ~/Source/narexil-desktop/eww ~/.config/eww
 ```
 
 ### 3. Copy Hyprland config files
@@ -126,11 +138,44 @@ Change the filenames in `hypr/autostart.conf` to match your own images.
 ```bash
 chmod +x ~/Source/narexil-desktop/waybar/scripts/*
 chmod +x ~/Source/narexil-desktop/hypr/scripts/*
+chmod +x ~/Source/narexil-desktop/eww/scripts/*
 ```
 
 ### 6. Restart Hyprland
 
 Log out and back in (or run `hyprctl reload` for partial changes).
+
+---
+
+## Eww dashboard
+
+Press **SUPER+HOME** to open the dashboard on whichever monitor your cursor is on. Press again to close. It slides in from the top and out when dismissed.
+
+### What it shows
+
+| Section | Content |
+|---------|---------|
+| **Clock** | Live time + date |
+| **Brightness** | DDC/CI slider + −/+ buttons for each monitor (OLED, DP-1, HDMI) |
+| **Volume** | PipeWire volume slider + −/+ buttons |
+| **System** | CPU%, RAM used, GPU%, VRAM used (NVIDIA) |
+| **Media** | Previous / Play-Pause / Next + track title |
+| **Network / VPN** | Active interface + NordVPN status with ON/OFF toggle |
+
+### How brightness works
+
+Brightness is controlled via **DDC/CI** using `ddcutil` — works on all three external monitors without any backlight driver. A background daemon (`eww/scripts/brightness-daemon.sh`) reads all monitor brightness values in parallel every 5s and caches them in `/tmp/eww-brightness-{1,2,3}`. The panel reads from cache (instant), and set commands are debounced per-bus so rapid slider moves don't flood the DDC bus.
+
+DDC bus mapping for this setup:
+- `/dev/i2c-1` → HDMI-A-1 (MSI OLED)
+- `/dev/i2c-2` → DP-1 (Dell main)
+- `/dev/i2c-3` → HDMI-A-2 (Dell secondary)
+
+If your monitors use different buses, check with `ddcutil detect` and update `brightness-daemon.sh` and the bus numbers in `eww.yuck`.
+
+### Disabling / adapting
+
+Remove `exec-once = eww daemon` and `exec-once = ~/.config/eww/scripts/brightness-daemon.sh` from `hypr/autostart.conf`, and remove the `SUPER+HOME` bind from `hypr/bind.conf`.
 
 ---
 
@@ -199,6 +244,7 @@ All monitor-specific config is in a few places. Find your output names with `hyp
 | `waybar/config-main.jsonc` | `"output": ["DP-1", "HDMI-A-2"]` |
 | `waybar/config-oled.jsonc` | `"output": ["HDMI-A-1"]` |
 | `waybar/scripts/oled-autohide.sh` | `MONITOR="HDMI-A-1"` |
+| `eww/scripts/brightness-daemon.sh` | DDC bus numbers (check with `ddcutil detect`) |
 | `hypr/autostart.conf` | `awww img -o <output>` lines |
 | `hypr/monitors.conf` | Monitor resolution/position/scale |
 
@@ -223,13 +269,16 @@ Add your second monitor to `config-main.jsonc`'s output array:
 
 | Keybind | Action |
 |---------|--------|
+| `Super+Home` | Toggle Eww dashboard (on current monitor) |
 | `Super+R` | Rofi app launcher |
+| `Super+B` | Open Vivaldi browser |
 | `Super+Shift+V` | Clipboard history picker |
 | `Super+Alt+F` | French text correction (select text first) |
 | `Super+Z` | Zoom cycle: 1x → 1.5x → 2.5x → 4x |
 | `Super+Shift+Z` | Reset zoom to 1x |
 | `Super+S` | Toggle scratchpad |
 | `Super+Shift+S` | Move window to scratchpad |
+| `Super+L` | Lock screen (hyprlock) |
 | `Print` | Screenshot full screen (with mako thumbnail) |
 | `Shift+Print` | Screenshot region (with mako thumbnail) |
 | `Super+Print` | Screenshot active window (with mako thumbnail) |
