@@ -11,6 +11,12 @@ fi
 
 STATUS=$(playerctl --player="$PLAYER" status 2>/dev/null)
 
+# Brief Stopped state during track transition — retry once before hiding
+if [[ "$STATUS" == "Stopped" || -z "$STATUS" ]]; then
+    sleep 0.8
+    STATUS=$(playerctl --player="$PLAYER" status 2>/dev/null)
+fi
+
 if [[ "$STATUS" == "Playing" ]]; then
     ICON="<span rise='1000'></span>"
 elif [[ "$STATUS" == "Paused" ]]; then

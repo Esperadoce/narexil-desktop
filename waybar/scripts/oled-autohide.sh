@@ -18,9 +18,10 @@ POLL_MS=80       # polling interval in ms
 ms() { date +%s%3N; }
 
 # Get monitor bounds
-read -r MON_X MON_W < <(hyprctl monitors -j | jq -r \
-    '.[] | select(.name == "'"$MONITOR"'") | "\(.x) \(.width)"')
+read -r MON_X MON_Y MON_W < <(hyprctl monitors -j | jq -r \
+    '.[] | select(.name == "'"$MONITOR"'") | "\(.x) \(.y) \(.width)"')
 MON_RIGHT=$((MON_X + MON_W))
+MON_TOP_EDGE=$((MON_Y + 4))
 
 # Wait for waybar to start then hide the bar
 sleep 1.5
@@ -36,7 +37,7 @@ while true; do
     cy=$(printf '%s' "$json" | jq -r '.y')
     now=$(ms)
 
-    if (( cy <= 4 && cx >= MON_X && cx < MON_RIGHT )); then
+    if (( cy >= MON_Y && cy <= MON_TOP_EDGE && cx >= MON_X && cx < MON_RIGHT )); then
         # Cursor at top edge of OLED
         if ! $VISIBLE; then
             pkill -SIGUSR1 -f "waybar.*config-oled" 2>/dev/null || true
