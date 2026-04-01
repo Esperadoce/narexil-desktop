@@ -9,7 +9,7 @@ This setup runs Hyprland but leans heavily on KDE for system tools. The goal is 
 
 This means Bluetooth, file management, authentication dialogs, wallet/keychain, settings panels — all KDE. No separate Bluetooth manager, no separate file picker, no duplicate auth agents.
 
-The one deliberate exception is the terminal: both **Kitty** and **Konsole** are installed. Konsole is the KDE default and integrates well with the rest of the stack. Kitty is kept for specific use cases where lower VRAM usage matters — it's significantly lighter on GPU memory than Konsole.
+The one deliberate exception is the terminal: both **Kitty** and **Konsole** are installed. Kitty is the default and used for most things. Konsole is kept for specific use cases where lower VRAM usage matters — it's significantly lighter on GPU memory than Kitty.
 
 ---
 
