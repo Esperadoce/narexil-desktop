@@ -16,6 +16,21 @@
 
 ---
 
+## OLED Philosophy
+
+The MSI MPG 491C (`HDMI-A-1`) is an OLED panel. OLED pixels emit their own light — static bright content causes **permanent burn-in** over time. Every decision for this monitor is burn-in-driven:
+
+| Decision | Reason |
+|----------|--------|
+| Wallpaper = `0x000000` solid black | Black OLED pixels are fully off — zero emission, zero risk |
+| Lock screen = solid black, no widgets | A blurred screenshot or clock left on screen during idle would burn in |
+| Bar = auto-hide overlay | No static element is ever left permanently visible at a fixed position |
+| Bar uses `layer: overlay` + `exclusive-zone: -1` | Floats above content, reserves no permanent space |
+
+The Dell monitors (`DP-1`, `HDMI-A-2`) are IPS — burn-in is not a concern, so they get wallpapers, a persistent bar, and a full lock screen.
+
+---
+
 ## Monitor Layout
 
 | Output | Hardware | Resolution | Bar | Wallpaper |
