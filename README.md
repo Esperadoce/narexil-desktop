@@ -206,3 +206,6 @@ Enabled globally via `render { enable_hdr = true }` in `hypr/general.conf`. Hypr
 - [ ] Clipboard image preview — cliphist image entries with swayimg preview
 - [ ] Per-app volume in eww dashboard
 - [ ] Workspace overview — `hyprexpo` plugin
+
+### Future concepts
+- [ ] AI-powered daily summary — TODO list + calendar exposed via MCP, Claude summarizes the day on demand and surfaces it in the eww dashboard or a mako notification
