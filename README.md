@@ -209,3 +209,11 @@ Enabled globally via `render { enable_hdr = true }` in `hypr/general.conf`. Hypr
 
 ### Future concepts
 - [ ] AI-powered daily summary — TODO list + calendar exposed via MCP, Claude summarizes the day on demand and surfaces it in the eww dashboard or a mako notification
+- [ ] Window border accent — per-window gradient borders matching `#33ccff → #00ff99`
+- [ ] Plymouth boot animation — themed to match the desktop colors
+- [ ] Rofi power menu redesign — visual upgrade to match the rest of the setup
+- [ ] Mic mute toggle — quick keybind + mako OSD feedback
+- [ ] Disk usage in eww dashboard
+- [ ] App window rules — floating KDE dialogs, pavucontrol, picture-in-picture video
+- [ ] `Super+E` → file manager keybind
+- [ ] Quick note scratchpad — persistent note file in a toggled terminal
