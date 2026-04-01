@@ -207,6 +207,15 @@ Enabled globally via `render { enable_hdr = true }` in `hypr/general.conf`. Hypr
 - [ ] Per-app volume in eww dashboard
 - [ ] Workspace overview — `hyprexpo` plugin
 
+### Known rough edges
+- [ ] Hypridle dimming — abrupt jump from full brightness to locked, no gradual dim
+- [ ] No OSD for volume/brightness changes outside the eww panel — `swayosd` would add a small overlay bar
+- [ ] Weather hardcoded to Lyon — breaks silently when travelling
+- [ ] NordVPN toggle has no "connecting..." feedback — waits silently until next poll
+- [ ] Brightness daemon dies silently — eww sliders freeze at last cached value with no indication
+- [ ] No consistent cursor theme across Hyprland + KDE apps
+- [ ] Eww panel has no close button — only closeable via SUPER+HOME
+
 ### Future concepts
 - [ ] AI-powered daily summary — TODO list + calendar exposed via MCP, Claude summarizes the day on demand and surfaces it in the eww dashboard or a mako notification
 - [ ] Window border accent — per-window gradient borders matching `#33ccff → #00ff99`
