@@ -6,6 +6,8 @@ import QtQuick
 Singleton {
     id: root
 
+    property bool enabled:    false
+
     property int usage:      0
     property int vramUsedMb: 0
     property int vramTotalMb: 0
@@ -33,6 +35,6 @@ Singleton {
         }
     }
 
-    Timer { interval: 2000; repeat: true; running: true; onTriggered: gpuProc.running = true }
-    Component.onCompleted: gpuProc.running = true
+    Timer { interval: 2000; repeat: true; running: enabled; onTriggered: gpuProc.running = true }
+    Component.onCompleted: if (enabled) gpuProc.running = true
 }

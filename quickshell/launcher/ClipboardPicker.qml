@@ -1,5 +1,3 @@
-pragma Singleton
-pragma ComponentBehavior: Bound
 import "../services"
 import Quickshell
 import Quickshell.Io
@@ -8,7 +6,7 @@ import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 
-Singleton {
+Scope {
     id: root
 
     property bool shown:   false
@@ -50,8 +48,9 @@ Singleton {
     }
 
     function select(entry: string): void {
+        const id = entry.split("\t")[0]
         pasteProc.command = ["bash", "-c",
-            `printf '%s' ${JSON.stringify(entry)} | cliphist decode | wl-copy`]
+            `printf '%s\t' ${JSON.stringify(id)} | cliphist decode | wl-copy`]
         pasteProc.running = true
         hide()
     }
@@ -71,7 +70,7 @@ Singleton {
         anchors { top: true; left: true; right: true; bottom: true }
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.exclusiveZone: -1
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+        WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
         MouseArea {
             anchors.fill: parent; z: -1
@@ -80,7 +79,7 @@ Singleton {
 
         Rectangle {
             width: 520
-            implicitHeight: Math.min(innerCol.implicitHeight + 24, 540)
+            height: 540
             anchors { horizontalCenter: parent.horizontalCenter; verticalCenter: parent.verticalCenter }
             radius: 12
             color:  Theme.panelBg
@@ -89,7 +88,7 @@ Singleton {
 
             ColumnLayout {
                 id: innerCol
-                anchors { top: parent.top; topMargin: 12; left: parent.left; leftMargin: 12; right: parent.right; rightMargin: 12 }
+                anchors { fill: parent; margins: 12 }
                 spacing: 8
 
                 Rectangle {
@@ -121,8 +120,8 @@ Singleton {
                             focus: overlay.visible
                             onTextChanged: root.selectedIdx = 0
                             Keys.onEscapePressed:  root.hide()
-                            Keys.onUpPressed:      root.selectedIdx = Math.max(0, root.selectedIdx - 1)
-                            Keys.onDownPressed:    root.selectedIdx = Math.min(root.filtered.length - 1, root.selectedIdx + 1)
+                            Keys.onUpPressed:   { root.selectedIdx = Math.max(0, root.selectedIdx - 1); listView.positionViewAtIndex(root.selectedIdx, ListView.EnsureVisible) }
+                            Keys.onDownPressed: { root.selectedIdx = Math.min(root.filtered.length - 1, root.selectedIdx + 1); listView.positionViewAtIndex(root.selectedIdx, ListView.EnsureVisible) }
                             Keys.onReturnPressed:  { if (root.filtered[root.selectedIdx]) root.select(root.filtered[root.selectedIdx]) }
                         }
                     }
@@ -131,36 +130,44 @@ Singleton {
                 ListView {
                     id: listView
                     Layout.fillWidth: true
-                    implicitHeight: Math.min(contentHeight, 440)
+                    Layout.fillHeight: true
                     clip: true
-                    model: root.filtered
-                    currentIndex: root.selectedIdx
-                    onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.EnsureVisible)
 
-                    delegate: Rectangle {
-                        required property string modelData
-                        required property int    index
-                        width: listView.width; height: 40; radius: 8
-                        color: index === root.selectedIdx
-                            ? Qt.rgba(0.2, 0.8, 1.0, 0.18)
-                            : (hov.containsMouse ? Qt.rgba(1,1,1,0.06) : "transparent")
-
-                        Text {
-                            anchors { left: parent.left; leftMargin: 14; right: parent.right; rightMargin: 14; verticalCenter: parent.verticalCenter }
-                            text: modelData.replace(/\t.*$/, "").substring(0, 80)
-                            font.pixelSize: 12; font.family: Theme.font
-                            color: index === root.selectedIdx ? Theme.cyan : Theme.textPrimary
-                            elide: Text.ElideRight
+                    WheelHandler {
+                        onWheel: event => {
+                            listView.contentY = Math.max(0,
+                                Math.min(listView.contentHeight - listView.height,
+                                    listView.contentY - event.angleDelta.y * 1.5))
                         }
+                    }
+                        model: root.filtered
+                        currentIndex: root.selectedIdx
 
-                        MouseArea {
-                            id: hov; anchors.fill: parent; hoverEnabled: true
-                            onClicked: root.select(modelData)
-                            onEntered: root.selectedIdx = index
+                        delegate: Rectangle {
+                            required property string modelData
+                            required property int    index
+                            width: listView.width; height: 40; radius: 8
+                            color: index === root.selectedIdx
+                                ? Qt.rgba(0.2, 0.8, 1.0, 0.18)
+                                : (hov.containsMouse ? Qt.rgba(1,1,1,0.06) : "transparent")
+
+                            Text {
+                                anchors { left: parent.left; leftMargin: 14; right: parent.right; rightMargin: 14; verticalCenter: parent.verticalCenter }
+                                text: (modelData.split("\t").slice(1).join("\t") || modelData).substring(0, 80)
+                                font.pixelSize: 12; font.family: Theme.font
+                                color: index === root.selectedIdx ? Theme.cyan : Theme.textPrimary
+                                elide: Text.ElideRight
+                            }
+
+                            MouseArea {
+                                id: hov; anchors.fill: parent; hoverEnabled: true
+                                acceptedButtons: Qt.LeftButton
+                                onClicked: root.select(modelData)
+                                onEntered: root.selectedIdx = index
+                            }
                         }
                     }
                 }
-            }
         }
     }
 }

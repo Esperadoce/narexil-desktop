@@ -22,7 +22,7 @@ Singleton {
         id: btProc
         command: ["bash", "-c",
             "bluetoothctl show 2>/dev/null | grep 'Powered:'; " +
-            "bluetoothctl devices Connected 2>/dev/null | head -1"]
+            "bluetoothctl devices Connected 2>/dev/null | grep -oE 'Device [A-F0-9:]+ .+' | head -1"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const lines = text.trim().split("\n")

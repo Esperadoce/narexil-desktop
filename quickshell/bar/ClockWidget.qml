@@ -15,7 +15,7 @@ Rectangle {
     Text {
         id: clockText
         anchors.centerIn: parent
-        text: Qt.formatDateTime(clk.now, "HH:mm · ddd dd MMM yyyy")
+        text: (clk.minutes, clk.hours, Qt.formatDateTime(new Date(), "HH:mm · ddd dd MMM yyyy"))
         font.pixelSize: Theme.fontSize
         font.family:    Theme.font
         font.weight:    Font.DemiBold

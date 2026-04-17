@@ -14,10 +14,14 @@
   `top -bn1 | grep "Cpu(s)" | awk '{printf "%d", $2}'`)
 (defpoll ram-usage  :interval "5s"
   `free -g | awk '/^Mem/{printf "%.1fG", $3}'`)
-(defpoll gpu-usage  :interval "2s"
-  `nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits | tr -d ' '`)
-(defpoll vram-usage :interval "5s"
-  `nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | awk '{printf "%.1fG", $1/1024}'`)
+(defpoll cpu-temp   :interval "2s"
+  `/usr/bin/sensors 2>/dev/null | grep 'Tctl:' | grep -oP '\+\K[0-9]+'`)
+; (defpoll gpu-usage  :interval "2s"
+;   `nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits | tr -d ' '`)
+; (defpoll gpu-temp   :interval "2s"
+;   `nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits | tr -d ' '`)
+; (defpoll vram-usage :interval "5s"
+;   `nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | awk '{printf "%.1fG", $1/1024}'`)
 
 (defpoll media-text :interval "2s"
   `playerctl --player="%any" metadata --format '{{artist}} - {{title}}' 2>/dev/null | head -1 | cut -c1-36 || echo "Nothing playing"`)
@@ -88,14 +92,21 @@
           (label :class "stat-val" :text "${cpu-usage}%")
           (label :class "stat-key" :text "CPU"))
         (box :class "stat-box" :orientation "v" :space-evenly false :spacing 2
+          (label :class "stat-val" :text "${cpu-temp}°")
+          (label :class "stat-key" :text "CPU°"))
+        (box :class "stat-box" :orientation "v" :space-evenly false :spacing 2
           (label :class "stat-val" :text ram-usage)
           (label :class "stat-key" :text "RAM"))
-        (box :class "stat-box" :orientation "v" :space-evenly false :spacing 2
-          (label :class "stat-val" :text "${gpu-usage}%")
-          (label :class "stat-key" :text "GPU"))
-        (box :class "stat-box" :orientation "v" :space-evenly false :spacing 2
-          (label :class "stat-val" :text vram-usage)
-          (label :class "stat-key" :text "VRAM"))))
+        ; (box :class "stat-box" :orientation "v" :space-evenly false :spacing 2
+        ;   (label :class "stat-val" :text "${gpu-usage}%")
+        ;   (label :class "stat-key" :text "GPU"))
+        ; (box :class "stat-box" :orientation "v" :space-evenly false :spacing 2
+        ;   (label :class "stat-val" :text "${gpu-temp}°")
+        ;   (label :class "stat-key" :text "GPU°"))
+        ; (box :class "stat-box" :orientation "v" :space-evenly false :spacing 2
+        ;   (label :class "stat-val" :text vram-usage)
+        ;   (label :class "stat-key" :text "VRAM"))
+        ))
 
     ;; Media
     (box :class "card" :orientation "v" :space-evenly false :spacing 8

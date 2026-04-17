@@ -12,4 +12,7 @@ import Quickshell
 ShellRoot {
     MainBars {}
     OledBar {}
+    Dashboard {}
+    Launcher {}
+    ClipboardPicker {}
 }

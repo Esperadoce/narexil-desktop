@@ -61,12 +61,15 @@ Scope {
         if (!mon) return
         const obj = mon.lastIpcObject
         if (!obj) return
-        const inX = cursorX >= (obj.x ?? 0) && cursorX < (obj.x ?? 0) + (obj.width ?? oledScreen.width)
-        if (inX && cursorY <= 4) {
+        const monX = obj.x ?? 0
+        const monY = obj.y ?? 0
+        const inX = cursorX >= monX && cursorX < monX + (obj.width ?? oledScreen.width)
+        const atTop = cursorY >= monY && cursorY <= monY + 4
+        if (inX && atTop) {
             barVisible = true
             hideTimer.stop()
-        } else if (barVisible) {
-            hideTimer.restart()
+        } else if (barVisible && !hideTimer.running) {
+            hideTimer.start()
         }
     }
 
@@ -76,7 +79,8 @@ Scope {
         visible: root.oledScreen !== null
 
         anchors { top: true; left: true; right: true }
-        implicitHeight: root.barH
+        implicitHeight: root.barVisible ? root.barH : 0
+        Behavior on implicitHeight { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
         color: "transparent"
 
         WlrLayershell.layer: WlrLayer.Overlay

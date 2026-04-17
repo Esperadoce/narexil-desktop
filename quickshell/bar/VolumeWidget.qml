@@ -1,11 +1,13 @@
 import "../services"
+import Quickshell
 import QtQuick
 
 Rectangle {
     id: root
     height: Theme.barHeight - Theme.moduleMarginV * 2
     radius: Theme.moduleRadius
-    color:  Theme.moduleBg
+    color: ma.containsMouse ? Theme.hoverBg : Theme.moduleBg
+    Behavior on color { ColorAnimation { duration: 150 } }
     implicitWidth: txt.implicitWidth + 20
 
     Text {
@@ -17,7 +19,10 @@ Rectangle {
     }
 
     MouseArea {
+        id: ma
         anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton
         onClicked: mouse => {
             if (mouse.button === Qt.MiddleButton) Audio.toggleMute()

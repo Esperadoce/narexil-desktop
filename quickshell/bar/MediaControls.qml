@@ -5,7 +5,7 @@ import QtQuick.Layouts
 Row {
     id: root
     spacing: 0
-    visible: Media.hasPlayer
+    visible: Media.hasPlayer && Media.title !== ""
 
     // Prev button
     Rectangle {

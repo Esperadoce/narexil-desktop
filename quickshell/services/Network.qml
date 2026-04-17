@@ -21,7 +21,7 @@ Singleton {
         command: ["bash", "-c",
             "essid=$(iwgetid -r 2>/dev/null); " +
             "if [ -n \"$essid\" ]; then echo \"wifi:$essid\"; " +
-            "elif ip link show | grep -qE 'state UP.*ether'; then echo 'eth:Ethernet'; " +
+            "elif ip -o link show up type ether 2>/dev/null | grep -q .; then echo 'eth:Ethernet'; " +
             "else echo 'off:'; fi"]
         stdout: StdioCollector {
             onStreamFinished: {

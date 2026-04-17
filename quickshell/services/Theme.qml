@@ -8,6 +8,7 @@ Singleton {
     readonly property color panelBg:  Qt.rgba(18/255, 18/255, 18/255, 0.95)
     readonly property color cardBg:   Qt.rgba(255/255, 255/255, 255/255, 0.05)
     readonly property color moduleBg: Qt.rgba(255/255, 255/255, 255/255, 0.06)
+    readonly property color hoverBg:  Qt.rgba(1, 1, 1, 0.12)
 
     // Borders
     readonly property color barBorder:  Qt.rgba(1, 1, 1, 0.07)

@@ -1,4 +1,3 @@
-pragma Singleton
 import "./."
 import "../services"
 import Quickshell
@@ -8,7 +7,7 @@ import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 
-Singleton {
+Scope {
     id: root
 
     property bool shown: false
@@ -63,6 +62,8 @@ Singleton {
             border.color: Theme.cyanBorder
             border.width: 1
             implicitHeight: col.implicitHeight + 16
+
+            MouseArea { anchors.fill: parent }
 
             ColumnLayout {
                 id: col

@@ -40,7 +40,7 @@ Rectangle {
                 width:  isActive ? 34 : 26
                 height: root.height
                 radius: 6
-                color:  isActive ? Theme.cyan : "transparent"
+                color: isActive ? Theme.cyan : (hov.containsMouse ? Qt.rgba(1,1,1,0.10) : "transparent")
 
                 Behavior on width { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
                 Behavior on color { ColorAnimation { duration: 120 } }
@@ -59,7 +59,10 @@ Rectangle {
                 }
 
                 MouseArea {
+                    id: hov
                     anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
                     onClicked: Hyprland.dispatch(`workspace ${modelData}`)
                 }
             }

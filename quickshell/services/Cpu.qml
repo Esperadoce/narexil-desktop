@@ -6,6 +6,8 @@ import QtQuick
 Singleton {
     id: root
 
+    property bool   enabled: false
+
     property int    cpuPct:  0
     property int    cpuTemp: 0
     property string ramText: "0G"
@@ -30,12 +32,13 @@ Singleton {
     }
 
     Timer {
-        interval: 2000; repeat: true; running: true
+        interval: 2000; repeat: true; running: enabled
         onTriggered: { cpuProc.running = true; tempProc.running = true }
     }
-    Timer { interval: 5000; repeat: true; running: true; onTriggered: ramProc.running = true }
+    Timer { interval: 5000; repeat: true; running: enabled; onTriggered: ramProc.running = true }
 
     Component.onCompleted: {
+        if (!enabled) return
         cpuProc.running  = true
         tempProc.running = true
         ramProc.running  = true
