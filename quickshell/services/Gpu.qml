@@ -6,35 +6,33 @@ import QtQuick
 Singleton {
     id: root
 
-    property bool enabled:    false
-
-    property int usage:      0
-    property int vramUsedMb: 0
+    property int usage:       0
+    property int vramUsedMb:  0
     property int vramTotalMb: 0
-    property int temp:       0
+    property int temp:        0
 
     readonly property string usageText: `${usage}%`
     readonly property string vramText:  `${(vramUsedMb / 1024).toFixed(1)}G`
     readonly property string tempText:  `${temp}°`
 
     Process {
-        id: gpuProc
-        command: ["nvidia-smi",
-            "--query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu",
-            "--format=csv,noheader,nounits"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const parts = text.trim().split(",").map(s => parseInt(s.trim()))
-                if (parts.length >= 4) {
-                    root.usage      = parts[0] || 0
-                    root.vramUsedMb = parts[1] || 0
-                    root.vramTotalMb = parts[2] || 0
-                    root.temp       = parts[3] || 0
+        running: true
+        command: ["bash", "-c",
+            "while true; do " +
+            "  nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu " +
+            "    --format=csv,noheader,nounits 2>/dev/null || echo '0, 0, 0, 0'; " +
+            "  sleep 2; " +
+            "done"]
+        stdout: SplitParser {
+            onRead: line => {
+                const p = line.split(",").map(s => parseInt(s.trim()))
+                if (p.length >= 4) {
+                    root.usage       = p[0] || 0
+                    root.vramUsedMb  = p[1] || 0
+                    root.vramTotalMb = p[2] || 0
+                    root.temp        = p[3] || 0
                 }
             }
         }
     }
-
-    Timer { interval: 2000; repeat: true; running: enabled; onTriggered: gpuProc.running = true }
-    Component.onCompleted: if (enabled) gpuProc.running = true
 }
