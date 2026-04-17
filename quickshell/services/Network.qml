@@ -16,20 +16,23 @@ Singleton {
     }
     readonly property string displayText: online ? `${icon} ${label}` : "󰖪"
 
+    // Persistent loop — avoids the broken Timer+restart pattern
     Process {
-        id: netProc
+        running: true
         command: ["bash", "-c",
-            "essid=$(iwgetid -r 2>/dev/null); " +
-            "if [ -n \"$essid\" ]; then echo \"wifi:$essid\"; " +
-            "elif ip -o link show up type ether 2>/dev/null | grep -q .; then echo 'eth:Ethernet'; " +
-            "else echo 'off:'; fi"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const t = text.trim()
-                if (t.startsWith("wifi:")) {
+            "while true; do " +
+            "  e=$(iwgetid -r 2>/dev/null); " +
+            "  if [ -n \"$e\" ]; then echo \"wifi:$e\"; " +
+            "  elif ip -o link show up | grep -E ': e[nt]' | grep -q 'LOWER_UP'; then echo 'eth:Ethernet'; " +
+            "  else echo 'off:'; fi; " +
+            "  sleep 5; " +
+            "done"]
+        stdout: SplitParser {
+            onRead: line => {
+                if (line.startsWith("wifi:")) {
                     root.online = true; root.wifi = true
-                    root.label  = t.substring(5)
-                } else if (t.startsWith("eth:")) {
+                    root.label  = line.substring(5)
+                } else if (line.startsWith("eth:")) {
                     root.online = true; root.wifi = false
                     root.label  = "Ethernet"
                 } else {
@@ -38,7 +41,4 @@ Singleton {
             }
         }
     }
-
-    Timer { interval: 5000; repeat: true; running: true; onTriggered: netProc.running = true }
-    Component.onCompleted: netProc.running = true
 }
