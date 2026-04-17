@@ -11,29 +11,31 @@ Singleton {
     property string deviceName: ""
 
     readonly property string icon: {
-        if (!powered)   return "󰂲"
-        if (connected)  return "󰂱"
+        if (!powered)  return "󰂲"
+        if (connected) return "󰂱"
         return "󰂯"
     }
     readonly property string displayText: connected ? `󰂱 ${deviceName}` : icon
-    readonly property color  iconColor:   connected ? "#33ccff" : "#444444"
 
+    // One persistent process that loops every 3s — no restart issues
     Process {
-        id: btProc
+        running: true
         command: ["bash", "-c",
-            "bluetoothctl show 2>/dev/null | grep 'Powered:'; " +
-            "bluetoothctl devices Connected 2>/dev/null | grep -oE 'Device [A-F0-9:]+ .+' | head -1"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const lines = text.trim().split("\n")
-                root.powered   = lines.some(l => l.includes("Powered: yes"))
-                const devLine  = lines.find(l => l.startsWith("Device "))
-                root.connected = !!devLine
-                root.deviceName = devLine ? devLine.split(" ").slice(2).join(" ") : ""
+            "while true; do " +
+            "  p=$(bluetoothctl show 2>/dev/null | grep -c 'Powered: yes'); " +
+            "  d=$(bluetoothctl devices Connected 2>/dev/null | grep -oE 'Device [A-F0-9:]+ .+' | head -1); " +
+            "  echo \"$p|$d\"; " +
+            "  sleep 3; " +
+            "done"]
+        stdout: SplitParser {
+            onRead: line => {
+                const sep   = line.indexOf("|")
+                const p     = line.substring(0, sep).trim()
+                const dev   = line.substring(sep + 1).trim()
+                root.powered    = p === "1"
+                root.connected  = dev.startsWith("Device ")
+                root.deviceName = root.connected ? dev.split(" ").slice(2).join(" ") : ""
             }
         }
     }
-
-    Timer { interval: 5000; repeat: true; running: true; onTriggered: btProc.running = true }
-    Component.onCompleted: btProc.running = true
 }
