@@ -18,9 +18,10 @@ Scope {
         return null
     }
 
-    property bool barVisible: false
-    property real cursorX:    0
-    property real cursorY:    0
+    property bool barVisible:  false
+    property bool mouseInBar:  false
+    property real cursorX:     0
+    property real cursorY:     0
 
     // Animated Y offset: 0 = visible (flush top), negative = hidden above
     readonly property int barH: Theme.barHeight + 4
@@ -63,12 +64,11 @@ Scope {
         if (!obj) return
         const monX = obj.x ?? 0
         const monY = obj.y ?? 0
-        const inX = cursorX >= monX && cursorX < monX + (obj.width ?? oledScreen.width)
-        const atTop = cursorY >= monY && cursorY <= monY + 4
-        if (inX && atTop) {
+        const inCorner = cursorX >= monX && cursorX <= monX + 100 && cursorY >= monY && cursorY <= monY + 4
+        if (inCorner) {
             barVisible = true
             hideTimer.stop()
-        } else if (barVisible && !hideTimer.running) {
+        } else if (barVisible && !mouseInBar && !hideTimer.running) {
             hideTimer.start()
         }
     }
@@ -100,6 +100,13 @@ Scope {
             color:  Theme.barBg
             border.color: Theme.barBorder
             border.width: 1
+
+            HoverHandler {
+                onContainsMouseChanged: {
+                    root.mouseInBar = containsMouse
+                    if (containsMouse) hideTimer.stop()
+                }
+            }
 
             Row {
                 anchors { left: parent.left; leftMargin: 8; verticalCenter: parent.verticalCenter }
