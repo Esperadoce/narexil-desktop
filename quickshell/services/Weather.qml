@@ -8,9 +8,16 @@ Singleton {
 
     property string tempC:       ""
     property string icon:        ""
-    property string tooltipText: ""
+    property string description: ""
+    property string feelsLike:   ""
+    property string humidity:    ""
+    property string windKmph:    ""
+    property string tomorrowMin: ""
+    property string tomorrowMax: ""
 
     readonly property string displayText: icon ? `${icon} ${tempC}°C` : "…"
+    readonly property string tooltipText:
+        description ? `${description}\nFeels like: ${feelsLike}°C\nHumidity: ${humidity}%\nWind: ${windKmph} km/h\nTomorrow: ${tomorrowMin}–${tomorrowMax}°C` : ""
 
     readonly property var iconMap: ({
         113: "󰖙", 116: "󰖕", 119: "󰖔", 122: "󰖑",
@@ -35,14 +42,14 @@ Singleton {
                     const cur  = data.current_condition[0]
                     const code = parseInt(cur.weatherCode)
                     const tmr  = data.weather[1]
-                    root.tempC = cur.temp_C
-                    root.icon  = root.iconMap[code] ?? ""
-                    root.tooltipText =
-                        `${cur.weatherDesc[0].value}\n` +
-                        `Feels like: ${cur.FeelsLikeC}°C\n` +
-                        `Humidity: ${cur.humidity}%\n` +
-                        `Wind: ${cur.windspeedKmph} km/h\n` +
-                        `Tomorrow: ${tmr.mintempC}–${tmr.maxtempC}°C`
+                    root.tempC       = cur.temp_C
+                    root.icon        = root.iconMap[code] ?? ""
+                    root.description = cur.weatherDesc[0].value
+                    root.feelsLike   = cur.FeelsLikeC
+                    root.humidity    = cur.humidity
+                    root.windKmph    = cur.windspeedKmph
+                    root.tomorrowMin = tmr.mintempC
+                    root.tomorrowMax = tmr.maxtempC
                 } catch(e) {
                     console.warn("Weather parse error:", e)
                 }

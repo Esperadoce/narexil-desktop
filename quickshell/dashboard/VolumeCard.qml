@@ -1,6 +1,5 @@
 import "../services"
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 
 Rectangle {
@@ -25,23 +24,41 @@ Rectangle {
             spacing: 8
             Layout.fillWidth: true
 
-            Slider {
-                id: volSlider
+            Item {
+                id: volSlItem
                 Layout.fillWidth: true
-                from: 0; to: 150
-                value: Audio.volumePct
-                onMoved: Audio.setVolume(value / 100)
+                height: 20
 
-                background: Rectangle {
-                    x: volSlider.leftPadding; y: volSlider.topPadding + volSlider.availableHeight / 2 - height / 2
-                    width: volSlider.availableWidth; height: 4; radius: 2
+                property bool dragging: false
+                property real dragFrac: 0
+                property real displayFrac: dragging ? dragFrac : Audio.volumePct / 150.0
+
+                Rectangle {
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width; height: 4; radius: 2
                     color: Qt.rgba(1,1,1,0.12)
-                    Rectangle { width: volSlider.visualPosition * parent.width; height: parent.height; radius: 2; color: Theme.cyan }
+                    Rectangle { width: volSlItem.displayFrac * parent.width; height: 4; radius: 2; color: Theme.cyan }
                 }
-                handle: Rectangle {
-                    x: volSlider.leftPadding + volSlider.visualPosition * (volSlider.availableWidth - width)
-                    y: volSlider.topPadding + volSlider.availableHeight / 2 - height / 2
+
+                Rectangle {
+                    x: volSlItem.displayFrac * (volSlItem.width - width)
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 14; height: 14; radius: 7; color: "white"
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onPressed: mouse => {
+                        volSlItem.dragging = true
+                        volSlItem.dragFrac = Math.max(0, Math.min(1, mouse.x / volSlItem.width))
+                        Audio.setVolume(volSlItem.dragFrac * 1.5)
+                    }
+                    onPositionChanged: mouse => {
+                        if (!pressed) return
+                        volSlItem.dragFrac = Math.max(0, Math.min(1, mouse.x / volSlItem.width))
+                        Audio.setVolume(volSlItem.dragFrac * 1.5)
+                    }
+                    onReleased: volSlItem.dragging = false
                 }
             }
 

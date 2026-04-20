@@ -28,20 +28,20 @@ Singleton {
 
     Process { id: applyProc; command: [] }
 
-    // Read initial values from eww cache
+    // Read initial values directly from monitors via DDC-CI
     Process {
         running: true
-        command: ["bash", "-c", "cat /tmp/eww-brightness-1 2>/dev/null || echo 50"]
-        stdout: StdioCollector { onStreamFinished: root.oled  = parseInt(text.trim()) || 50 }
+        command: ["bash", "-c", "ddcutil getvcp 10 --bus 1 --brief 2>/dev/null | awk '{print $4}'"]
+        stdout: StdioCollector { onStreamFinished: { const v = parseInt(text.trim()); if (v > 0) root.oled  = v } }
     }
     Process {
         running: true
-        command: ["bash", "-c", "cat /tmp/eww-brightness-2 2>/dev/null || echo 50"]
-        stdout: StdioCollector { onStreamFinished: root.dp1   = parseInt(text.trim()) || 50 }
+        command: ["bash", "-c", "ddcutil getvcp 10 --bus 2 --brief 2>/dev/null | awk '{print $4}'"]
+        stdout: StdioCollector { onStreamFinished: { const v = parseInt(text.trim()); if (v > 0) root.dp1   = v } }
     }
     Process {
         running: true
-        command: ["bash", "-c", "cat /tmp/eww-brightness-3 2>/dev/null || echo 50"]
-        stdout: StdioCollector { onStreamFinished: root.hdmi2 = parseInt(text.trim()) || 50 }
+        command: ["bash", "-c", "ddcutil getvcp 10 --bus 3 --brief 2>/dev/null | awk '{print $4}'"]
+        stdout: StdioCollector { onStreamFinished: { const v = parseInt(text.trim()); if (v > 0) root.hdmi2 = v } }
     }
 }

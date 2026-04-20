@@ -1,6 +1,5 @@
 import "../services"
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 
 Rectangle {
@@ -21,16 +20,21 @@ Rectangle {
             color: Theme.textDimmer
         }
 
+        BrightRow {
+            label: "ALL"
+            value: Math.round((Brightness.oled + Brightness.dp1 + Brightness.hdmi2) / 3)
+            onChanged: v => { Brightness.setOled(v); Brightness.setDp1(v); Brightness.setHdmi2(v) }
+        }
         BrightRow { label: "OLED"; value: Brightness.oled;  onChanged: v => Brightness.setOled(v)  }
         BrightRow { label: "DP-1"; value: Brightness.dp1;   onChanged: v => Brightness.setDp1(v)   }
         BrightRow { label: "HDMI"; value: Brightness.hdmi2; onChanged: v => Brightness.setHdmi2(v) }
     }
 
     component BrightRow: RowLayout {
+        id: brightRow
         required property string label
         required property int    value
         signal changed(int v)
-
         spacing: 8
 
         Text {
@@ -39,29 +43,46 @@ Rectangle {
             color: Theme.textMuted
         }
 
-        Slider {
-            id: sl
+        Item {
+            id: slItem
             Layout.fillWidth: true
-            from: 1; to: 100
-            value: parent.value
-            onMoved: parent.changed(Math.round(value))
+            height: 20
 
-            background: Rectangle {
-                x: sl.leftPadding; y: sl.topPadding + sl.availableHeight / 2 - height / 2
-                width: sl.availableWidth; height: 4; radius: 2
+            property bool dragging: false
+            property real dragFrac: 0
+            property real displayFrac: dragging ? dragFrac : (brightRow.value - 1) / 99.0
+
+            Rectangle {
+                anchors.verticalCenter: parent.verticalCenter
+                width: parent.width; height: 4; radius: 2
                 color: Qt.rgba(1,1,1,0.12)
-                Rectangle { width: sl.visualPosition * parent.width; height: parent.height; radius: 2; color: Theme.cyan }
+                Rectangle { width: slItem.displayFrac * parent.width; height: 4; radius: 2; color: Theme.cyan }
             }
-            handle: Rectangle {
-                x: sl.leftPadding + sl.visualPosition * (sl.availableWidth - width)
-                y: sl.topPadding + sl.availableHeight / 2 - height / 2
-                width: 14; height: 14; radius: 7
-                color: "white"
+
+            Rectangle {
+                x: slItem.displayFrac * (slItem.width - width)
+                anchors.verticalCenter: parent.verticalCenter
+                width: 14; height: 14; radius: 7; color: "white"
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onPressed: mouse => {
+                    slItem.dragging = true
+                    slItem.dragFrac = Math.max(0, Math.min(1, mouse.x / slItem.width))
+                    brightRow.changed(Math.round(1 + slItem.dragFrac * 99))
+                }
+                onPositionChanged: mouse => {
+                    if (!pressed) return
+                    slItem.dragFrac = Math.max(0, Math.min(1, mouse.x / slItem.width))
+                    brightRow.changed(Math.round(1 + slItem.dragFrac * 99))
+                }
+                onReleased: slItem.dragging = false
             }
         }
 
         Text {
-            text: `${parent.value}%`; Layout.preferredWidth: 32
+            text: `${brightRow.value}%`; Layout.preferredWidth: 32
             font.pixelSize: 11; font.family: Theme.font
             color: Theme.textMuted; horizontalAlignment: Text.AlignRight
         }
@@ -81,11 +102,7 @@ Rectangle {
                     }
                     MouseArea {
                         id: btnHov; anchors.fill: parent; hoverEnabled: true
-                        onClicked: {
-                            // Walk up to find BrightRow and call changed
-                            const row = parent.parent.parent.parent
-                            row.changed(Math.max(1, Math.min(100, row.value + (modelData === "+" ? 5 : -5))))
-                        }
+                        onClicked: brightRow.changed(Math.max(1, Math.min(100, brightRow.value + (modelData === "+" ? 5 : -5))))
                     }
                 }
             }
