@@ -32,9 +32,18 @@ Scope {
         return Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
     }
 
-    readonly property var allApps: DesktopEntries.applications.values
-        .filter(a => a.name && !a.noDisplay)
-        .sort((a, b) => a.name.localeCompare(b.name))
+    readonly property var allApps: {
+        const seen = new Set()
+        return DesktopEntries.applications.values
+            .filter(a => {
+                if (!a.name || a.noDisplay) return false
+                const key = a.id || a.name
+                if (seen.has(key)) return false
+                seen.add(key)
+                return true
+            })
+            .sort((a, b) => a.name.localeCompare(b.name))
+    }
 
     readonly property var filteredApps: {
         const q = searchInput.text.toLowerCase().trim()
