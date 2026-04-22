@@ -1,4 +1,5 @@
 //@ pragma Env QSG_RENDER_LOOP=threaded
+//@ pragma UseQApplication
 
 // Singletons auto-instantiate on import
 import "./services"
