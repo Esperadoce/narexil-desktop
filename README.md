@@ -1,7 +1,7 @@
 # narexil-desktop
 
 Hyprland desktop config for a 3-monitor CachyOS setup with NVIDIA GPU.
-Includes Waybar, an Eww on-demand dashboard, Rofi, Mako, Hypridle/Hyprlock, and a full set of scripts.
+Bar, launcher, clipboard picker, and dashboard are all handled by **QuickShell** (QML). Notifications via Mako, idle/lock via Hypridle/Hyprlock.
 
 ## Philosophy
 
@@ -15,14 +15,16 @@ The one exception: both **Kitty** (default) and **Konsole** are installed. Konso
 
 | Component | Description |
 |-----------|-------------|
-| **Waybar** | Persistent bar on DP-1/HDMI-A-2, auto-hide overlay on OLED |
-| **Eww dashboard** | On-demand panel on `SUPER+HOME` — brightness, volume, stats, media, VPN |
+| **QuickShell bar** | Persistent floating pill bar on DP-1/HDMI-A-2, auto-hide overlay on OLED |
+| **QuickShell dashboard** | On-demand panel on `SUPER+HOME` — brightness, volume, stats, media, weather |
+| **QuickShell launcher** | `SUPER+R` — app launcher with dedupe by id |
+| **QuickShell clipboard picker** | `SUPER+SHIFT+V` — cliphist-backed clipboard history |
+| **System tray** | Right-click any tray icon for its context menu (hover feedback) |
 | **Mako** | Notifications |
 | **Hypridle** | Idle daemon — lock at 10min, DPMS off at 15min |
 | **Hyprlock** | Lock screen with blurred screenshot, OLED-safe (solid black) |
-| **Rofi** | App launcher, clipboard picker, power menu |
 | **awww** | Per-monitor animated wallpaper daemon |
-| **Scripts** | Weather, NordVPN, media controls, GPU/VRAM, scratchpad, French correction |
+| **Scripts** | Zoom cycle, French text correction |
 
 ---
 
@@ -40,26 +42,27 @@ The one exception: both **Kitty** (default) and **Konsole** are installed. Konso
 
 ```bash
 # Core
-paru -S hyprland uwsm waybar hypridle
+paru -S hyprland uwsm hypridle hyprlock
 
-# Dashboard
-paru -S eww
-sudo pacman -S ddcutil
+# Shell (bar, launcher, dashboard, clipboard)
+paru -S quickshell
 
-# Launcher + notifications
-paru -S rofi-wayland rofi-calc
+# Notifications
 sudo pacman -S mako
 
 # Wallpaper + clipboard
 paru -S awww-git cliphist
 sudo pacman -S wl-clipboard
 
+# Brightness (DDC/CI for external monitors)
+sudo pacman -S ddcutil
+
 # Script dependencies
-sudo pacman -S playerctl jq curl
+sudo pacman -S playerctl jq curl grimblast
 
 # Fonts
-sudo pacman -S noto-fonts
-paru -S ttf-nerd-fonts-symbols
+sudo pacman -S noto-fonts ttf-rubik
+paru -S ttf-material-symbols-variable-git
 
 # Optional
 paru -S nordvpn-bin ollama
@@ -75,10 +78,8 @@ ollama pull mistral-nemo   # for French correction
 git clone https://github.com/Esperadoce/narexil-desktop ~/Source/narexil-desktop
 
 # 2. Symlink configs
-ln -sf ~/Source/narexil-desktop/waybar ~/.config/waybar
-ln -sf ~/Source/narexil-desktop/rofi ~/.config/rofi
+ln -sf ~/Source/narexil-desktop/quickshell ~/.config/quickshell
 ln -sf ~/Source/narexil-desktop/mako ~/.config/mako
-ln -sf ~/Source/narexil-desktop/eww ~/.config/eww
 
 # 3. Source hypr configs
 # Add to ~/.config/hypr/hyprland.conf:
@@ -88,27 +89,26 @@ ln -sf ~/Source/narexil-desktop/eww ~/.config/eww
 # source = ~/Source/narexil-desktop/hypr/rules.conf
 
 # 4. Make scripts executable
-chmod +x ~/Source/narexil-desktop/waybar/scripts/*
 chmod +x ~/Source/narexil-desktop/hypr/scripts/*
-chmod +x ~/Source/narexil-desktop/eww/scripts/*
 
 # 5. Add wallpapers to ~/Pictures/Wallpapers/
 #    berserk.png → DP-1 | summer.jpeg → HDMI-A-2 | HDMI-A-1 uses solid black
+
+# 6. Start QuickShell
+quickshell &
 ```
 
----
-
-## Eww dashboard
-
-`SUPER+HOME` opens the panel on whichever monitor your cursor is on. Press again to close. Slides in/out from the top.
-
-**Sections:** Clock · Brightness (DDC/CI, all 3 monitors) · Volume · CPU/RAM/GPU/VRAM · Media controls · Network + NordVPN toggle
-
-**Brightness:** Controlled via `ddcutil` over DDC/CI. A background daemon caches values every 5s so reads are instant. Slider writes are debounced per I2C bus to avoid flooding DDC.
-
-If your monitors use different I2C buses, run `ddcutil detect` and update `eww/scripts/brightness-daemon.sh` + the bus numbers in `eww/eww.yuck`.
+No build step — edit any QML file and run `pkill quickshell && quickshell &`, or for pure QML tweaks just `qs ipc call quickshell reload` where supported.
 
 ---
+
+## QuickShell dashboard
+
+`SUPER+HOME` opens the panel on whichever monitor your cursor is on. Press again to close.
+
+**Sections:** Clock · Weather · Brightness (DDC/CI, all 3 monitors) · Volume · CPU/RAM/GPU/VRAM · Media controls · Network · Bluetooth · NordVPN
+
+**Brightness:** Controlled via `ddcutil` over DDC/CI. If your monitors use different I2C buses, run `ddcutil detect` and update the bus numbers in the relevant QuickShell service.
 
 ---
 
@@ -120,11 +120,11 @@ If your monitors use different I2C buses, run `ddcutil detect` and update `eww/s
 
 ## OLED auto-hide bar
 
-The bar on `HDMI-A-1` hides by default. Move your cursor to the **top edge** of that monitor to reveal it.
+The bar on `HDMI-A-1` hides by default. Move your cursor to the **top edge** of that monitor to reveal it; once visible, hovering over the bar keeps it open.
 
-`waybar/scripts/oled-autohide.sh` polls cursor position every 80ms and sends `SIGUSR1` to the waybar PID to show/hide. The bar uses `layer: overlay` + `exclusive-zone: -1` so it floats above windows without pushing them.
+Implementation lives in `quickshell/bar/OledBar.qml` — polls `hyprctl cursorpos` every 80ms, shows when cursor Y ≤ 4px inside the OLED's X range, hides 2000ms after the cursor leaves.
 
-To disable: remove the `oled-autohide.sh` line from `hypr/autostart.conf` and change the bar layer/exclusive-zone in `waybar/config-oled.jsonc`.
+IPC control: `qs ipc call oledbar {show,hide,toggle}`.
 
 ---
 
@@ -134,12 +134,10 @@ Find your monitor names with `hyprctl monitors`, then update:
 
 | File | What to change |
 |------|----------------|
-| `waybar/config-main.jsonc` | `"output": ["DP-1", "HDMI-A-2"]` |
-| `waybar/config-oled.jsonc` | `"output": ["HDMI-A-1"]` |
-| `waybar/scripts/oled-autohide.sh` | `MONITOR="HDMI-A-1"` |
-| `eww/scripts/brightness-daemon.sh` | I2C bus numbers |
-| `hypr/monitors.conf` | Resolution, position, scale |
+| `quickshell/bar/MainBars.qml` | `s.name !== "HDMI-A-1"` exclusion filter |
+| `quickshell/bar/OledBar.qml` | `"HDMI-A-1"` screen name references |
 | `hypr/autostart.conf` | `awww img -o <output>` wallpaper lines |
+| `hypr/monitors.conf` | Resolution, position, scale |
 
 ---
 
@@ -147,20 +145,36 @@ Find your monitor names with `hyprctl monitors`, then update:
 
 | Keybind | Action |
 |---------|--------|
-| `Super+Home` | Toggle Eww dashboard |
-| `Super+B` | Open Vivaldi |
-| `Super+L` | Lock screen |
-| `Super+R` | Rofi launcher |
-| `Super+Shift+V` | Clipboard history |
+| `Super+Q` | Kitty terminal |
+| `Super+E` | Dolphin file manager |
+| `Super+B` | Vivaldi |
+| `Super+R` | QuickShell launcher |
+| `Super+Shift+V` | QuickShell clipboard picker |
+| `Super+Home` | QuickShell dashboard |
+| `Super+L` | Hyprlock |
+| `Super+X` | Kill active window |
+| `Super+Shift+X` | Force-kill active (SIGKILL by PID) |
+| `Super+V` | Toggle floating |
+| `Super+F` | Fullscreen (hides bar) |
+| `Super+Shift+F` | Maximize (keeps bar/gaps) |
+| `Super+S` | Toggle scratchpad |
+| `Super+Shift+S` | Move window to scratchpad |
 | `Super+Alt+F` | French text correction |
 | `Super+Z` | Zoom cycle (1× → 1.5× → 2.5× → 4×) |
 | `Super+Shift+Z` | Reset zoom |
-| `Super+S` | Toggle scratchpad |
-| `Super+Shift+S` | Move window to scratchpad |
 | `Print` | Screenshot full screen |
 | `Shift+Print` | Screenshot region |
 | `Super+Print` | Screenshot active window |
-| `XF86Tools` | Open Cider |
+| `XF86Tools` | Cider |
+
+IPC commands (scriptable):
+
+```bash
+qs ipc call oledbar toggle
+qs ipc call dashboard toggle
+qs ipc call launcher toggle
+qs ipc call clipboard toggle
+```
 
 ---
 
@@ -179,50 +193,33 @@ Enabled globally via `render { enable_hdr = true }` in `hypr/general.conf`. Hypr
 
 ---
 
-## TODO
+## Versions
 
-### Done
-- [x] Waybar — persistent bar on DP-1/HDMI-A-2, auto-hide overlay on OLED
-- [x] OLED auto-hide daemon (cursor-triggered, 80ms poll)
-- [x] Eww on-demand dashboard (SUPER+HOME, opens on cursor's monitor)
-- [x] Brightness control via DDC/CI for all 3 monitors (debounced, cached)
-- [x] Volume control in dashboard
-- [x] CPU / RAM / GPU / VRAM stats in dashboard
-- [x] Media controls in dashboard (playerctl)
-- [x] NordVPN status + toggle in dashboard
-- [x] Hypridle — lock at 10min, DPMS off at 15min
-- [x] Hyprlock — per-monitor layout, OLED solid black
-- [x] French text correction (Ollama + mistral-nemo)
-- [x] Screenshot with mako thumbnail notification
-- [x] Zoom cycle (Super+Z)
-- [x] Scratchpad indicator in Waybar
-- [x] Clipboard history (cliphist + rofi)
-- [x] SUPER+B → Vivaldi
+- **v1.0** — initial Waybar + Eww + Rofi setup (historical, see tag `v1.0`)
+- **v2.0** — full QuickShell migration (bar, dashboard, launcher, clipboard picker) + tray context menus
+- **v2.0.1** — removed dead Waybar/Eww/Rofi configs and scripts
+
+---
+
+## TODO
 
 ### Planned
 - [ ] Hypridle dimming — gradually dim monitors before locking instead of hard-locking
 - [ ] Night light — `hyprsunset` auto color temperature by time of day (good for OLED)
-- [ ] Do Not Disturb toggle in eww dashboard (mako `makoctl mode`)
-- [ ] Clipboard image preview — cliphist image entries with swayimg preview
-- [ ] Per-app volume in eww dashboard
+- [ ] Do Not Disturb toggle in dashboard (mako `makoctl mode`)
+- [ ] Clipboard image preview — cliphist image entries with inline preview
+- [ ] Per-app volume in dashboard
 - [ ] Workspace overview — `hyprexpo` plugin
 
 ### Known rough edges
-- [ ] Hypridle dimming — abrupt jump from full brightness to locked, no gradual dim
-- [ ] No OSD for volume/brightness changes outside the eww panel — `swayosd` would add a small overlay bar
 - [ ] Weather hardcoded to Lyon — breaks silently when travelling
-- [ ] NordVPN toggle has no "connecting..." feedback — waits silently until next poll
-- [ ] Brightness daemon dies silently — eww sliders freeze at last cached value with no indication
+- [ ] NordVPN toggle has no "connecting..." feedback
 - [ ] No consistent cursor theme across Hyprland + KDE apps
-- [ ] Eww panel has no close button — only closeable via SUPER+HOME
 
 ### Future concepts
-- [ ] AI-powered daily summary — TODO list + calendar exposed via MCP, Claude summarizes the day on demand and surfaces it in the eww dashboard or a mako notification
+- [ ] AI-powered daily summary — TODO list + calendar exposed via MCP, Claude summarizes the day on demand
 - [ ] Window border accent — per-window gradient borders matching `#33ccff → #00ff99`
 - [ ] Plymouth boot animation — themed to match the desktop colors
-- [ ] Rofi power menu redesign — visual upgrade to match the rest of the setup
 - [ ] Mic mute toggle — quick keybind + mako OSD feedback
-- [ ] Disk usage in eww dashboard
-- [ ] App window rules — floating KDE dialogs, pavucontrol, picture-in-picture video
-- [ ] `Super+E` → file manager keybind
+- [ ] Disk usage in dashboard
 - [ ] Quick note scratchpad — persistent note file in a toggled terminal
