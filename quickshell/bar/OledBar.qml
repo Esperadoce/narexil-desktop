@@ -102,9 +102,10 @@ Scope {
             border.width: 1
 
             HoverHandler {
-                onContainsMouseChanged: {
-                    root.mouseInBar = containsMouse
-                    if (containsMouse) hideTimer.stop()
+                id: barHover
+                onHoveredChanged: {
+                    root.mouseInBar = hovered
+                    if (hovered) hideTimer.stop()
                 }
             }
 
