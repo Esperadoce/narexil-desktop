@@ -33,7 +33,6 @@ Scope {
         WlrLayershell.exclusiveZone: -1
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
 
-        // Click-outside to dismiss
         MouseArea {
             anchors.fill: parent; z: -1
             onClicked: root.hide()
@@ -41,15 +40,15 @@ Scope {
 
         property real slideY: root.shown ? 56 : -(panel.height + 60)
         Behavior on slideY {
-            NumberAnimation { id: slideAnim; duration: 220; easing.type: Easing.OutCubic }
+            NumberAnimation { id: slideAnim; duration: 240; easing.type: Easing.OutCubic }
         }
 
         Rectangle {
             id: panel
             y: overlay.slideY
-            width: 520
+            width: 560
             anchors.horizontalCenter: parent.horizontalCenter
-            radius: 12
+            radius: 14
             color:  Theme.panelBg
             border.color: Theme.cyanBorder
             border.width: 1
@@ -66,12 +65,19 @@ Scope {
                 }
                 spacing: 6
 
-                ClockCard      { Layout.fillWidth: true }
-                BrightnessCard { Layout.fillWidth: true }
-                VolumeCard     { Layout.fillWidth: true }
+                ClockCard  { Layout.fillWidth: true }
+
+                // Volume + Network side by side
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+                    VolumeCard  { Layout.fillWidth: true }
+                    NetVpnCard  { Layout.fillWidth: true }
+                }
+
                 SystemCard     { Layout.fillWidth: true }
                 MediaCard      { Layout.fillWidth: true }
-                NetVpnCard     { Layout.fillWidth: true }
+                BrightnessCard { Layout.fillWidth: true }
             }
         }
 
