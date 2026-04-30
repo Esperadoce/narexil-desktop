@@ -34,17 +34,17 @@ Rectangle {
             Layout.preferredWidth: 36
         }
 
-        // Progress bar
+        // Progress bar — excluded from layout when hidden
         Item {
+            visible: mrow.showBar
             Layout.fillWidth: true
             height: 5
 
             Rectangle {
                 anchors.fill: parent; radius: 2.5
-                color: mrow.showBar ? Qt.rgba(1, 1, 1, 0.08) : "transparent"
+                color: Qt.rgba(1, 1, 1, 0.08)
             }
             Rectangle {
-                visible: mrow.showBar
                 width: parent.width * Math.max(0, Math.min(1, mrow.frac))
                 height: parent.height; radius: 2.5
                 color: mrow.frac >= 0.9 ? Theme.red
@@ -67,15 +67,18 @@ Rectangle {
             text: mrow.val
             font.pixelSize: 12; font.family: Theme.font; font.weight: Font.Medium
             color: mrow.valColor
-            Layout.preferredWidth: 42
-            horizontalAlignment: Text.AlignRight
         }
         Text {
             visible: mrow.extra !== ""
             text: mrow.extra
             font.pixelSize: 11; font.family: Theme.font
             color: Theme.textDim
-            Layout.preferredWidth: 36
+        }
+
+        // Fills remaining space so text stays left when bar is hidden
+        Item {
+            visible: !mrow.showBar
+            Layout.fillWidth: true
         }
     }
 
