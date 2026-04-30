@@ -67,18 +67,15 @@ Rectangle {
             text: mrow.val
             font.pixelSize: 12; font.family: Theme.font; font.weight: Font.Medium
             color: mrow.valColor
+            Layout.preferredWidth: 42
+            horizontalAlignment: Text.AlignRight
         }
         Text {
             visible: mrow.extra !== ""
             text: mrow.extra
             font.pixelSize: 11; font.family: Theme.font
             color: Theme.textDim
-        }
-
-        // Fills remaining space so text stays left when bar is hidden
-        Item {
-            visible: !mrow.showBar
-            Layout.fillWidth: true
+            Layout.preferredWidth: 36
         }
     }
 
@@ -112,9 +109,9 @@ Rectangle {
         MetricRow {
             icon:     "󰍛"
             label:    "RAM"
-            frac:     0
-            showBar:  false
-            val:      Cpu.ramText
+            frac:     Cpu.ramUsedGb / Math.max(1, Cpu.ramTotalGb)
+            val:      `${Cpu.ramUsedGb.toFixed(1)}G`
+            extra:    `/ ${Cpu.ramTotalGb.toFixed(0)}G`
             valColor: Theme.textPrimary
         }
         MetricRow {
