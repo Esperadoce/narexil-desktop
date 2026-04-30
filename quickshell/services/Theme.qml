@@ -29,6 +29,10 @@ Singleton {
     readonly property color textInactive: "#444444"
     readonly property color textWeather:  "#aaddff"
 
+    // Selection
+    readonly property color selectionBg:    Qt.rgba(0.2, 0.8, 1.0, 0.18)
+    readonly property color selectionColor: Qt.rgba(0.2, 0.8, 1.0, 0.30)
+
     // Dimensions
     readonly property int barHeight:     40
     readonly property int barMargin:     12

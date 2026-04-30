@@ -37,11 +37,11 @@ Scope {
     }
 
     Process {
-        id: cursorProc
-        command: ["hyprctl", "cursorpos"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const parts = text.trim().split(",")
+        running: root.oledScreen !== null
+        command: ["bash", "-c", "while true; do hyprctl cursorpos; sleep 0.08; done"]
+        stdout: SplitParser {
+            onRead: line => {
+                const parts = line.trim().split(",")
                 if (parts.length === 2) {
                     root.cursorX = parseFloat(parts[0]) || 0
                     root.cursorY = parseFloat(parts[1]) || 0
@@ -49,11 +49,6 @@ Scope {
                 root._evaluate()
             }
         }
-    }
-
-    Timer {
-        interval: 80; repeat: true; running: root.oledScreen !== null
-        onTriggered: cursorProc.running = true
     }
 
     function _evaluate(): void {
@@ -109,33 +104,9 @@ Scope {
                 }
             }
 
-            Row {
-                anchors { left: parent.left; leftMargin: 8; verticalCenter: parent.verticalCenter }
-                spacing: 4
-                Workspaces  { screen: bar.screen }
-                ScratchpadWidget {}
-                WindowTitle { verticalAlignment: Text.AlignVCenter; height: Theme.barHeight - Theme.moduleMarginV * 2 }
-                MediaControls {}
-            }
-
-            Row {
-                anchors { centerIn: parent }
-                spacing: 8
-                WeatherWidget {}
-                ClockWidget {}
-            }
-
-            Row {
-                anchors { right: parent.right; rightMargin: 8; verticalCenter: parent.verticalCenter }
-                spacing: 4
-                GpuWidget {}
-                SysmonWidget {}
-                TrayWidget {}
-                BluetoothWidget {}
-                NetworkWidget {}
-                VolumeWidget {}
-                VpnWidget {}
-                PowerWidget {}
+            BarContent {
+                anchors.fill: parent
+                screen: bar.screen
             }
         }
     }

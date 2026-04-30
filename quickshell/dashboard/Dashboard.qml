@@ -2,7 +2,6 @@ import "./."
 import "../services"
 import Quickshell
 import Quickshell.Io
-import Quickshell.Hyprland
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
@@ -16,13 +15,6 @@ Scope {
     function hide(): void   { root.shown = false }
     function toggle(): void { root.shown = !root.shown }
 
-    readonly property ShellScreen activeScreen: {
-        const n = Hyprland.focusedMonitor?.name ?? ""
-        for (let i = 0; i < Quickshell.screens.length; i++)
-            if (Quickshell.screens[i].name === n) return Quickshell.screens[i]
-        return Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
-    }
-
     IpcHandler {
         target: "dashboard"
         function show(): void   { root.show() }
@@ -32,7 +24,7 @@ Scope {
 
     PanelWindow {
         id: overlay
-        screen: root.activeScreen
+        screen: Shell.activeScreen
         visible: root.shown || slideAnim.running
         color: "transparent"
 
