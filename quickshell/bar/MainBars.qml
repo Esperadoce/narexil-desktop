@@ -48,40 +48,9 @@ Scope {
                 border.color: Theme.barBorder
                 border.width: 1
 
-                // Left section
-                Row {
-                    id: leftSection
-                    anchors { left: parent.left; leftMargin: 8; verticalCenter: parent.verticalCenter }
-                    spacing: 4
-
-                    Workspaces { screen: bar.screen }
-                    ScratchpadWidget {}
-                    WindowTitle { verticalAlignment: Text.AlignVCenter; height: Theme.barHeight - Theme.moduleMarginV * 2 }
-                    MediaControls {}
-                }
-
-                // Center section
-                Row {
-                    anchors { centerIn: parent }
-                    spacing: 8
-
-                    WeatherWidget {}
-                    ClockWidget {}
-                }
-
-                // Right section
-                Row {
-                    anchors { right: parent.right; rightMargin: 8; verticalCenter: parent.verticalCenter }
-                    spacing: 4
-
-                    GpuWidget {}
-                    SysmonWidget {}
-                    TrayWidget {}
-                    BluetoothWidget {}
-                    NetworkWidget {}
-                    VolumeWidget {}
-                    VpnWidget {}
-                    PowerWidget {}
+                BarContent {
+                    anchors.fill: parent
+                    screen: bar.screen
                 }
             }
         }

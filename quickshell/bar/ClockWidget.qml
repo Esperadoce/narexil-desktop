@@ -5,8 +5,8 @@ import QtQuick
 Rectangle {
     height: Theme.barHeight - Theme.moduleMarginV * 2
     radius: Theme.moduleRadius
-    color:  Qt.rgba(0.2, 0.8, 1.0, 0.10)
-    border.color: Qt.rgba(0.2, 0.8, 1.0, 0.20)
+    color:  Theme.moduleBg
+    border.color: Theme.barBorder
     border.width: 1
     implicitWidth: clockText.implicitWidth + 20
 

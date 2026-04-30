@@ -21,12 +21,22 @@ Rectangle {
         }
 
         // Nothing playing
-        Text {
+        Row {
             visible: !Media.hasPlayer
+            spacing: 8
             Layout.alignment: Qt.AlignHCenter
-            text: "Nothing playing"
-            font.pixelSize: 12; font.family: Theme.font
-            color: Theme.textDim
+            Text {
+                text: "󰝚"
+                font.pixelSize: 16; font.family: Theme.iconFont
+                color: Theme.textDimmer
+                anchors.verticalCenter: parent.verticalCenter
+            }
+            Text {
+                text: "Nothing playing"
+                font.pixelSize: 12; font.family: Theme.font
+                color: Theme.textDim
+                anchors.verticalCenter: parent.verticalCenter
+            }
         }
 
         // Track info
@@ -61,31 +71,36 @@ Rectangle {
 
             Repeater {
                 model: [
-                    { icon: "󰒮", action: "prev"  },
-                    { icon: Media.playIcon,  action: "play"  },
-                    { icon: "󰒭", action: "next"  }
+                    { icon: "󰒮", action: "prev" },
+                    { icon: Media.playIcon,  action: "play" },
+                    { icon: "󰒭", action: "next" }
                 ]
                 delegate: Rectangle {
                     required property var modelData
                     readonly property bool isPlay: modelData.action === "play"
-                    width: isPlay ? 48 : 36; height: isPlay ? 48 : 36; radius: isPlay ? 24 : 18
+                    width: isPlay ? 48 : 36; height: isPlay ? 48 : 36
+                    radius: width / 2
                     color: ma.containsMouse
-                        ? (isPlay ? Qt.rgba(0.2, 0.8, 1.0, 0.25) : Qt.rgba(1,1,1,0.14))
-                        : (isPlay ? Qt.rgba(0.2, 0.8, 1.0, 0.12) : Qt.rgba(1,1,1,0.07))
+                        ? (isPlay ? Qt.rgba(0.2, 0.8, 1.0, 0.28) : Qt.rgba(1,1,1,0.14))
+                        : (isPlay ? Qt.rgba(0.2, 0.8, 1.0, 0.14) : Qt.rgba(1,1,1,0.07))
+                    border.color: isPlay ? Qt.rgba(0.2, 0.8, 1.0, 0.25) : "transparent"
+                    border.width: 1
+                    Behavior on color { ColorAnimation { duration: 120 } }
 
                     Text {
                         anchors.centerIn: parent
                         text: modelData.icon
                         font.pixelSize: isPlay ? 22 : 16
-                        font.family: "Material Symbols Rounded"
+                        font.family: Theme.iconFont
                         color: isPlay ? Theme.cyan : Theme.textMuted
                     }
                     MouseArea {
                         id: ma; anchors.fill: parent; hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            if (modelData.action === "prev")       Media.previous()
-                            else if (modelData.action === "play")  Media.playPause()
-                            else                                   Media.next()
+                            if (modelData.action === "prev")      Media.previous()
+                            else if (modelData.action === "play") Media.playPause()
+                            else                                  Media.next()
                         }
                     }
                 }
