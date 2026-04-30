@@ -1,40 +1,54 @@
 import "../services"
 import QtQuick
 
-Row {
-    spacing: 4
+Rectangle {
+    height: Theme.barHeight - Theme.moduleMarginV * 2
+    radius: Theme.moduleRadius
+    color:  Theme.moduleBg
+    implicitWidth: row.implicitWidth + 20
 
-    // GPU util
-    Rectangle {
-        height: Theme.barHeight - Theme.moduleMarginV * 2
-        radius: Theme.moduleRadius
-        color:  Theme.moduleBg
-        implicitWidth: gpuTxt.implicitWidth + 20
+    Row {
+        id: row
+        anchors.centerIn: parent
+        spacing: 6
 
+        // GPU util
         Text {
-            id: gpuTxt
-            anchors.centerIn: parent
-            text: ` ${Gpu.usageText}`
+            text: "󰢮"
+            font.pixelSize: 13; font.family: Theme.iconFont
+            color: Gpu.usage >= 90 ? Theme.red
+                 : Gpu.usage >= 70 ? Theme.orange
+                 : Theme.cyan
+            anchors.verticalCenter: parent.verticalCenter
+        }
+        Text {
+            text: Gpu.usageText
             font.pixelSize: Theme.fontSize; font.family: Theme.font
             color: Gpu.usage >= 90 ? Theme.red
                  : Gpu.usage >= 70 ? Theme.orange
                  : Theme.textMuted
+            anchors.verticalCenter: parent.verticalCenter
         }
-    }
 
-    // VRAM
-    Rectangle {
-        height: Theme.barHeight - Theme.moduleMarginV * 2
-        radius: Theme.moduleRadius
-        color:  Theme.moduleBg
-        implicitWidth: vramTxt.implicitWidth + 20
+        // Separator
+        Rectangle {
+            width: 1; height: 14
+            color: Qt.rgba(1, 1, 1, 0.15)
+            anchors.verticalCenter: parent.verticalCenter
+        }
 
+        // VRAM
         Text {
-            id: vramTxt
-            anchors.centerIn: parent
-            text: ` ${Gpu.vramText}`
+            text: "󰾲"
+            font.pixelSize: 12; font.family: Theme.iconFont
+            color: Theme.textDim
+            anchors.verticalCenter: parent.verticalCenter
+        }
+        Text {
+            text: Gpu.vramText
             font.pixelSize: Theme.fontSize; font.family: Theme.font
             color: Theme.textMuted
+            anchors.verticalCenter: parent.verticalCenter
         }
     }
 }

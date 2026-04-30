@@ -23,16 +23,30 @@ Item {
         ClockWidget   {}
     }
 
+    // Right section — three visual clusters
     Row {
         anchors { right: parent.right; rightMargin: 8; verticalCenter: parent.verticalCenter }
-        spacing: 4
-        GpuWidget       {}
-        SysmonWidget    {}
-        TrayWidget      {}
-        BluetoothWidget {}
-        NetworkWidget   {}
-        VolumeWidget    {}
-        VpnWidget       {}
-        PowerWidget     {}
+        spacing: Theme.groupSpacing
+
+        Row {
+            spacing: 4
+            anchors.verticalCenter: parent.verticalCenter
+            GpuWidget    {}
+            SysmonWidget {}
+        }
+        Row {
+            spacing: 4
+            anchors.verticalCenter: parent.verticalCenter
+            TrayWidget      {}
+            BluetoothWidget {}
+            NetworkWidget   {}
+        }
+        Row {
+            spacing: 4
+            anchors.verticalCenter: parent.verticalCenter
+            VolumeWidget {}
+            VpnWidget    {}
+            PowerWidget  {}
+        }
     }
 }

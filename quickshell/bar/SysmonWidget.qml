@@ -1,40 +1,54 @@
 import "../services"
 import QtQuick
 
-Row {
-    spacing: 4
+Rectangle {
+    height: Theme.barHeight - Theme.moduleMarginV * 2
+    radius: Theme.moduleRadius
+    color:  Theme.moduleBg
+    implicitWidth: row.implicitWidth + 20
 
-    // CPU
-    Rectangle {
-        height: Theme.barHeight - Theme.moduleMarginV * 2
-        radius: Theme.moduleRadius
-        color:  Theme.moduleBg
-        implicitWidth: cpuTxt.implicitWidth + 20
+    Row {
+        id: row
+        anchors.centerIn: parent
+        spacing: 6
 
+        // CPU
         Text {
-            id: cpuTxt
-            anchors.centerIn: parent
-            text: ` ${Cpu.cpuPct}%`
+            text: "󱤓"
+            font.pixelSize: 13; font.family: Theme.iconFont
+            color: Cpu.cpuPct >= 90 ? Theme.red
+                 : Cpu.cpuPct >= 70 ? Theme.orange
+                 : Theme.textDim
+            anchors.verticalCenter: parent.verticalCenter
+        }
+        Text {
+            text: `${Cpu.cpuPct}%`
             font.pixelSize: Theme.fontSize; font.family: Theme.font
             color: Cpu.cpuPct >= 90 ? Theme.red
                  : Cpu.cpuPct >= 70 ? Theme.orange
                  : Theme.textMuted
+            anchors.verticalCenter: parent.verticalCenter
         }
-    }
 
-    // RAM
-    Rectangle {
-        height: Theme.barHeight - Theme.moduleMarginV * 2
-        radius: Theme.moduleRadius
-        color:  Theme.moduleBg
-        implicitWidth: ramTxt.implicitWidth + 20
+        // Separator
+        Rectangle {
+            width: 1; height: 14
+            color: Qt.rgba(1, 1, 1, 0.15)
+            anchors.verticalCenter: parent.verticalCenter
+        }
 
+        // RAM
         Text {
-            id: ramTxt
-            anchors.centerIn: parent
-            text: ` ${Cpu.ramText}`
+            text: "󰍛"
+            font.pixelSize: 12; font.family: Theme.iconFont
+            color: Theme.textDim
+            anchors.verticalCenter: parent.verticalCenter
+        }
+        Text {
+            text: Cpu.ramText
             font.pixelSize: Theme.fontSize; font.family: Theme.font
             color: Theme.textMuted
+            anchors.verticalCenter: parent.verticalCenter
         }
     }
 }

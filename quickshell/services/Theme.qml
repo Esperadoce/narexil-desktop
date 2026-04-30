@@ -7,8 +7,8 @@ Singleton {
     readonly property color barBg:    Qt.rgba(18/255, 18/255, 18/255, 0.88)
     readonly property color panelBg:  Qt.rgba(18/255, 18/255, 18/255, 0.95)
     readonly property color cardBg:   Qt.rgba(255/255, 255/255, 255/255, 0.05)
-    readonly property color moduleBg: Qt.rgba(255/255, 255/255, 255/255, 0.06)
-    readonly property color hoverBg:  Qt.rgba(1, 1, 1, 0.12)
+    readonly property color moduleBg: Qt.rgba(255/255, 255/255, 255/255, 0.09)
+    readonly property color hoverBg:  Qt.rgba(1, 1, 1, 0.15)
 
     // Borders
     readonly property color barBorder:  Qt.rgba(1, 1, 1, 0.07)
@@ -40,8 +40,10 @@ Singleton {
     readonly property int moduleRadius:  8
     readonly property int modulePadH:    10
     readonly property int moduleMarginV: 6
+    readonly property int groupSpacing:  8
 
     // Font
     readonly property string font:     "Rubik"
+    readonly property string iconFont: "Material Symbols Rounded"
     readonly property int    fontSize: 13
 }
