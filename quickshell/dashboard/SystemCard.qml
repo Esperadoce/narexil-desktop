@@ -15,6 +15,7 @@ Rectangle {
         required property string label
         required property real   frac
         required property string val
+        property bool            showBar:  true
         property string          extra:    ""
         property color           valColor: Theme.textPrimary
         spacing: 8
@@ -40,9 +41,10 @@ Rectangle {
 
             Rectangle {
                 anchors.fill: parent; radius: 2.5
-                color: Qt.rgba(1, 1, 1, 0.08)
+                color: mrow.showBar ? Qt.rgba(1, 1, 1, 0.08) : "transparent"
             }
             Rectangle {
+                visible: mrow.showBar
                 width: parent.width * Math.max(0, Math.min(1, mrow.frac))
                 height: parent.height; radius: 2.5
                 color: mrow.frac >= 0.9 ? Theme.red
@@ -108,6 +110,7 @@ Rectangle {
             icon:     "󰍛"
             label:    "RAM"
             frac:     0
+            showBar:  false
             val:      Cpu.ramText
             valColor: Theme.textPrimary
         }
