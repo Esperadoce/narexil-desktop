@@ -14,6 +14,8 @@ ShellRoot {
     MainBars {}
     OledBar {}
     Dashboard {}
+    EqOverlay {}
+    CalendarOverlay {}
     Launcher {}
     ClipboardPicker {}
 }

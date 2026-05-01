@@ -4,7 +4,6 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick
-import QtQuick.Layouts
 
 Scope {
     id: root
@@ -16,7 +15,7 @@ Scope {
     function toggle(): void { root.shown = !root.shown }
 
     IpcHandler {
-        target: "dashboard"
+        target: "eq"
         function show(): void   { root.show() }
         function hide(): void   { root.hide() }
         function toggle(): void { root.toggle() }
@@ -46,38 +45,19 @@ Scope {
         Rectangle {
             id: panel
             y: overlay.slideY
-            width: 560
+            width: 520
             anchors.horizontalCenter: parent.horizontalCenter
             radius: 14
             color:  Theme.panelBg
             border.color: Theme.cyanBorder
             border.width: 1
-            implicitHeight: col.implicitHeight + 16
+            implicitHeight: card.implicitHeight + 16
 
             MouseArea { anchors.fill: parent }
 
-            ColumnLayout {
-                id: col
-                anchors {
-                    top: parent.top; topMargin: 8
-                    left: parent.left; leftMargin: 8
-                    right: parent.right; rightMargin: 8
-                }
-                spacing: 6
-
-                ClockCard { Layout.fillWidth: true }
-
-                // Volume + Network side by side
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 6
-                    VolumeCard  { Layout.fillWidth: true }
-                    NetVpnCard  { Layout.fillWidth: true }
-                }
-
-                SystemCard     { Layout.fillWidth: true }
-                MediaCard      { Layout.fillWidth: true }
-                BrightnessCard { Layout.fillWidth: true }
+            EqCard {
+                id: card
+                anchors { top: parent.top; topMargin: 8; left: parent.left; leftMargin: 8; right: parent.right; rightMargin: 8 }
             }
         }
 

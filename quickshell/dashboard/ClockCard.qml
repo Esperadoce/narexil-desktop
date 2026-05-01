@@ -9,13 +9,12 @@ Rectangle {
     border.width: 1
     implicitHeight: weatherRow.visible
         ? (weatherRow.y + weatherRow.height + 16)
-        : (dateText.y  + dateText.height  + 16)
+        : (dateText.y   + dateText.height   + 16)
 
     // Subtle cyan gradient tint at top
     Rectangle {
         anchors { top: parent.top; left: parent.left; right: parent.right }
-        height: parent.implicitHeight * 0.6
-        radius: parent.radius
+        height: 80; radius: parent.radius
         gradient: Gradient {
             GradientStop { position: 0.0; color: Qt.rgba(0.2, 0.8, 1.0, 0.05) }
             GradientStop { position: 1.0; color: "transparent" }
@@ -30,7 +29,6 @@ Rectangle {
         text: (clk.seconds, clk.minutes, Qt.formatDateTime(new Date(), "HH:mm:ss"))
         font.pixelSize: 46; font.family: Theme.font; font.weight: Font.Light
         color: Theme.cyan
-        layer.enabled: true
     }
 
     Text {
@@ -38,10 +36,17 @@ Rectangle {
         anchors { horizontalCenter: parent.horizontalCenter; top: timeText.bottom; topMargin: 4 }
         text: (clk.seconds, Qt.formatDateTime(new Date(), "dddd, d MMMM yyyy"))
         font.pixelSize: 12; font.family: Theme.font
-        color: Theme.textMuted
+        color: CalendarState.shown ? Theme.cyan : Theme.textMuted
+        Behavior on color { ColorAnimation { duration: 150 } }
     }
 
-    // Divider
+    MouseArea {
+        anchors { horizontalCenter: parent.horizontalCenter; top: dateText.top; bottom: dateText.bottom }
+        width: dateText.implicitWidth + 16
+        cursorShape: Qt.PointingHandCursor
+        onClicked: CalendarState.toggle()
+    }
+
     Rectangle {
         id: divider
         visible: weatherRow.visible
@@ -57,41 +62,30 @@ Rectangle {
         spacing: 14
 
         Row {
-            spacing: 6
-            anchors.verticalCenter: parent.verticalCenter
-
+            spacing: 6; anchors.verticalCenter: parent.verticalCenter
             Text {
                 text: Weather.icon
-                font.pixelSize: 22; font.family: Theme.iconFont
-                color: Theme.textWeather
+                font.pixelSize: 22; font.family: Theme.iconFont; color: Theme.textWeather
                 anchors.verticalCenter: parent.verticalCenter
             }
             Text {
                 text: `${Weather.tempC}°C`
                 font.pixelSize: 24; font.family: Theme.font; font.weight: Font.Light
-                color: Theme.textWeather
-                anchors.verticalCenter: parent.verticalCenter
+                color: Theme.textWeather; anchors.verticalCenter: parent.verticalCenter
             }
         }
 
-        Rectangle {
-            width: 1; height: 28; color: Qt.rgba(1, 1, 1, 0.10)
-            anchors.verticalCenter: parent.verticalCenter
-        }
+        Rectangle { width: 1; height: 28; color: Qt.rgba(1, 1, 1, 0.10); anchors.verticalCenter: parent.verticalCenter }
 
         Column {
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: 3
-
+            anchors.verticalCenter: parent.verticalCenter; spacing: 3
             Text {
                 text: Weather.description
-                font.pixelSize: 12; font.family: Theme.font
-                color: Theme.textPrimary
+                font.pixelSize: 12; font.family: Theme.font; color: Theme.textPrimary
             }
             Text {
                 text: `Feels ${Weather.feelsLike}°C  ·  ${Weather.windKmph} km/h  ·  ↑${Weather.tomorrowMax}° ↓${Weather.tomorrowMin}°`
-                font.pixelSize: 10; font.family: Theme.font
-                color: Theme.textDim
+                font.pixelSize: 10; font.family: Theme.font; color: Theme.textDim
             }
         }
     }
