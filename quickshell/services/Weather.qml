@@ -14,6 +14,7 @@ Singleton {
     property string windKmph:    ""
     property string tomorrowMin: ""
     property string tomorrowMax: ""
+    property var    hourly:      []  // [{hour, tempC, icon}] for today
 
     readonly property string displayText: icon ? `${icon} ${tempC}°C` : "…"
     readonly property string tooltipText:
@@ -50,6 +51,11 @@ Singleton {
                     root.windKmph    = cur.windspeedKmph
                     root.tomorrowMin = tmr.mintempC
                     root.tomorrowMax = tmr.maxtempC
+                    root.hourly = data.weather[0].hourly.map(h => ({
+                        hour:  parseInt(h.time) / 100,
+                        tempC: h.tempC,
+                        icon:  root.iconMap[parseInt(h.weatherCode)] ?? ""
+                    }))
                 } catch(e) {
                     console.warn("Weather parse error:", e)
                 }
