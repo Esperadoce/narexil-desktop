@@ -77,6 +77,7 @@ Singleton {
     NotificationServer {
         keepOnReload: true
         actionsSupported: true
+        imageSupported: true
 
         onNotification: notif => {
             if (props.dnd && notif.urgency !== NotificationUrgency.Critical) return
